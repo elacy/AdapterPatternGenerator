@@ -39,7 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeCompileUnitCreator.cs" />
     <Compile Include="Generator.cs" />
+    <Compile Include="ICodeCompileUnitCreator.cs" />
     <Compile Include="ITypeDeclarationCreator.cs" />
     <Compile Include="ITypeWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

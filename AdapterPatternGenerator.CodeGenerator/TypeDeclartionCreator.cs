@@ -9,24 +9,25 @@ namespace AdapterPatternGenerator.CodeGenerator
 {
     public class TypeDeclarationCreator:ITypeDeclarationCreator
     {
-        public List<CodeTypeDeclaration> CreateTypes(IEnumerable<Type> exportedTypes)
-        {
-            return exportedTypes.SelectMany(CreateDeclarations).ToList();
-        }
+        
 
-        private IEnumerable<CodeTypeDeclaration> CreateDeclarations(Type type)
+        private string GetTypeName(Type type, bool addInterface, bool isStatic)
         {
-            yield return new CodeTypeDeclaration(string.Format("{0}Adapter", type.Name))
+            return string.Format("{0}{1}{2}", addInterface ? "I" : "", type.Name, isStatic ? "StaticAdapter" : "Adapter");
+        }
+        public IEnumerable<CodeTypeDeclaration> CreateTypes(Type type)
+        {
+            yield return new CodeTypeDeclaration(GetTypeName(type,false,false))
             {
             };
-            yield return new CodeTypeDeclaration(string.Format("I{0}Adapter", type.Name))
+            yield return new CodeTypeDeclaration(GetTypeName(type, true, false))
             {
                 IsInterface = true
             };
-            yield return new CodeTypeDeclaration(string.Format("{0}StaticAdapter", type.Name))
+            yield return new CodeTypeDeclaration(GetTypeName(type, false, true))
             {
             };
-            yield return new CodeTypeDeclaration(string.Format("I{0}StaticAdapter", type.Name))
+            yield return new CodeTypeDeclaration(GetTypeName(type, true, true))
             {
                 IsInterface = true
             };

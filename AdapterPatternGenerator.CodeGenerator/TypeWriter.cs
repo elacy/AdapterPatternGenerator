@@ -9,7 +9,7 @@ namespace AdapterPatternGenerator.CodeGenerator
 {
     public class TypeWriter:ITypeWriter
     {
-        public void WriteTypes(List<CodeTypeDeclaration> declaredTypes, string directoryName)
+        public void WriteTypes(CodeCompileUnit codeCompileUnit, string directoryName)
         {
         }
     }

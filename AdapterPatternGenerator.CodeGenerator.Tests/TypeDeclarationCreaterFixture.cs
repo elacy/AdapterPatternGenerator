@@ -15,18 +15,16 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         [Test]
         public void CreateTypesCreates2InterfacesAnd2ClassesForEachtype()
         {
-            var types = new[] {typeof (ExampleClass), typeof (ExampleSealedClass)};
             var typeDeclarationCreator = new TypeDeclarationCreator();
-            var declaredTypes = typeDeclarationCreator.CreateTypes(types);
-            Assert.AreEqual(4, declaredTypes.Count(x => x.IsInterface));
-            Assert.AreEqual(4, declaredTypes.Count(x => x.IsClass));
+            var declaredTypes = typeDeclarationCreator.CreateTypes(typeof(ExampleClass));
+            Assert.AreEqual(2, declaredTypes.Count(x => x.IsInterface));
+            Assert.AreEqual(2, declaredTypes.Count(x => x.IsClass));
         }
         [Test]
         public void CreateTypesUsesRightTypeNames()
         {
-            var types = new[] { typeof(ExampleClass) };
             var typeDeclarationCreator = new TypeDeclarationCreator();
-            var actualNames = typeDeclarationCreator.CreateTypes(types).Select(x=>x.Name);
+            var actualNames = typeDeclarationCreator.CreateTypes(typeof(ExampleClass)).Select(x => x.Name);
             var expectedTypeNames = new[]
             {
                 "ExampleClassAdapter",

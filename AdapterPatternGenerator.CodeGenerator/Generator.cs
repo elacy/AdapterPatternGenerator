@@ -9,19 +9,19 @@ namespace AdapterPatternGenerator.CodeGenerator
 {
     public class Generator:IGenerator
     {
-        private readonly ITypeDeclarationCreator _typeDeclarationCreator;
+        private readonly ICodeCompileUnitCreator _codeCompileUnitCreator;
         private readonly ITypeWriter _typeWriter;
 
-        public Generator(ITypeDeclarationCreator typeDeclarationCreator, ITypeWriter typeWriter)
+        public Generator(ICodeCompileUnitCreator codeCompileUnitCreator, ITypeWriter typeWriter)
         {
-            _typeDeclarationCreator = typeDeclarationCreator;
+            _codeCompileUnitCreator = codeCompileUnitCreator;
             _typeWriter = typeWriter;
         }
 
         public void GenerateCode(IEnumerable<Type> types, string directoryName)
         {
-            var typeDeclarations = _typeDeclarationCreator.CreateTypes(types);
-            _typeWriter.WriteTypes(typeDeclarations, directoryName);
+            var compileUnit = _codeCompileUnitCreator.CreateCodeCompileUnit(types);
+            _typeWriter.WriteTypes(compileUnit,directoryName);
         }
     }
 

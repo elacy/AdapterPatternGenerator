@@ -29,6 +29,7 @@ namespace AdapterPatternGenerator.Console
             var builder = new ContainerBuilder();
             builder.RegisterType<TypeDeclarationCreator>().As<ITypeDeclarationCreator>();
             builder.RegisterType<TypeWriter>().As<ITypeWriter>();
+            builder.RegisterType<CodeCompileUnitCreator>().As<ICodeCompileUnitCreator>();
             builder.RegisterType<Generator>().As<IGenerator>();
             return builder.Build();
         }

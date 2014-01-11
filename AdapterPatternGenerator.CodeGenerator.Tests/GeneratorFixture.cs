@@ -16,18 +16,18 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         [Test]
         public void GenerateCodeCreatesTypesAndWritesThemToDirectory()
         {
-            var typeCreator = A.Fake<ITypeDeclarationCreator>();
+            var codeCompileUnitCreator = A.Fake<ICodeCompileUnitCreator>();
             var typeWriter = A.Fake<ITypeWriter>();
-            var generator = new Generator(typeCreator, typeWriter);
+            var generator = new Generator(codeCompileUnitCreator, typeWriter);
             var types = new List<Type>();
             const string directoryName = "directoryName";
-            var declaredTypes = new List<CodeTypeDeclaration>();
-            A.CallTo(() => typeCreator.CreateTypes(types)).Returns(declaredTypes);
+            var codeCompileUnit = new CodeCompileUnit();
+            A.CallTo(() => codeCompileUnitCreator.CreateCodeCompileUnit(types)).Returns(codeCompileUnit);
 
             generator.GenerateCode(types, directoryName);
 
-            A.CallTo(() => typeCreator.CreateTypes(types)).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => typeWriter.WriteTypes(declaredTypes, directoryName)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => codeCompileUnitCreator.CreateCodeCompileUnit(types)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => typeWriter.WriteTypes(codeCompileUnit, directoryName)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 }

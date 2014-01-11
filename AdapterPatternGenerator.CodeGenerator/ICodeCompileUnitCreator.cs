@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 namespace AdapterPatternGenerator.CodeGenerator
 {
-    public interface ITypeDeclarationCreator
+    public interface ICodeCompileUnitCreator
     {
-        IEnumerable<CodeTypeDeclaration> CreateTypes(Type type);
+        CodeCompileUnit CreateCodeCompileUnit(IEnumerable<Type> types);
     }
 }

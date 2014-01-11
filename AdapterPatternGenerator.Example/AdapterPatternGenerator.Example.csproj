@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DifferentNameSpace\ExampleDifferentNameSpaceClass.cs" />
     <Compile Include="ExampleClass.cs" />
     <Compile Include="ExampleSealedClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -8,5 +8,13 @@ namespace AdapterPatternGenerator.Example
 {
     public class ExampleClass
     {
+        public string ExampleProperty { get; set; }
+
+        public string ExampleReadOnlyProperty
+        {
+            get { return string.Empty; }
+        }
+
+        public string ExampleWriteOnlyProperty {  set{} }
     }
 }
