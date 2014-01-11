@@ -1,4 +1,20 @@
-AdapterPatternGenerator
-=======================
+# Adapter Pattern Generator (in very early development)
 
-Visual Studio add-in that allows a user to generate adapter patterns for selected types/assemblies
+Adapter Pattern  will be a Visual Studio add-in that allows a user to generate adapter patterns for selected assemblies.
+
+## Feature Overview
+- Generates interface and glue code for adapters
+- Adapts Static Methods including Constructor
+- Avoids garbage collection issues
+- Copies documentation to classes and interfaces
+
+## First thoughts on how it should work
+
+1. User will select the Adapter Pattern Generator Project Item
+1. A wizard will allow the user to select assemblies to generate
+1. The Add-in will then generate a project for interfaces and a project for classes, the classes assembly will reference the interface assembly
+1. Each type in each assembly selected will have an interface and class for static members and an interface and class for non static members generated in the appropriate assemblies.
+1. Enums will be copied to the interface assembly
+1. Fields will be treated as properties
+1. Constants will be treated as read only properties
+1. Classes that adapt the non static side will handle garbage collection (IDisposable)
