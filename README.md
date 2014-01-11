@@ -18,6 +18,7 @@ Adapter Pattern  will be a Visual Studio add-in that allows a user to generate a
 1. A wizard will allow the user to select assemblies to generate
 1. The Add-in will then generate a project for interfaces and a project for classes, the classes assembly will reference the interface assembly
 1. Each type in each assembly selected will have an interface and class for static members and an interface and class for non static members generated in the appropriate assemblies.
+1. Each created interface will inherit from the interfaces that the adapted type implements
 1. Enums will be copied to the interface assembly
 1. Adapted Interfaces will be copied to the interface assembly
 1. Fields will be treated as properties
