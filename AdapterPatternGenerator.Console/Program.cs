@@ -5,6 +5,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AdapterPatternGenerator.AdapterClasses.System.CodeDom.Compiler;
+using AdapterPatternGenerator.AdapterClasses.System.IO;
+using AdapterPatternGenerator.AdapterInterfaces.System.CodeDom.Compiler;
+using AdapterPatternGenerator.AdapterInterfaces.System.IO;
 using AdapterPatternGenerator.CodeGenerator;
 using AdapterPatternGenerator.Example;
 using Autofac;
@@ -28,9 +32,12 @@ namespace AdapterPatternGenerator.Console
         {
             var builder = new ContainerBuilder();
             builder.RegisterType<TypeDeclarationCreator>().As<ITypeDeclarationCreator>();
-            builder.RegisterType<TypeWriter>().As<ITypeWriter>();
+            builder.RegisterType<CodeWriter>().As<ICodeWriter>();
             builder.RegisterType<CodeCompileUnitCreator>().As<ICodeCompileUnitCreator>();
             builder.RegisterType<Generator>().As<IGenerator>();
+            builder.RegisterType<DirectoryStaticAdapter>().As<IDirectoryStaticAdapter>();
+            builder.RegisterType<StreamWriterStaticAdapter>().As<IStreamWriterStaticAdapter>();
+            builder.RegisterType<CodeDomProviderStaticAdapter>().As<ICodeDomProviderStaticAdapter>();
             return builder.Build();
         }
     }

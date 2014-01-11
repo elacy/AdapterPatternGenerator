@@ -4,22 +4,34 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using AdapterPatternGenerator.AdapterInterfaces.System.CodeDom.Compiler;
+using AdapterPatternGenerator.AdapterInterfaces.System.IO;
 
 namespace AdapterPatternGenerator.CodeGenerator
 {
-    public class TypeWriter:ITypeWriter
+    public class CodeWriter:ICodeWriter
     {
+        private readonly ICodeDomProviderStaticAdapter _codeDomProviderStatic;
+        private readonly IFileStaticAdapter _fileStatic;
+
+        public CodeWriter(ICodeDomProviderStaticAdapter codeDomProviderStatic, IFileStaticAdapter fileStatic)
+        {
+            _codeDomProviderStatic = codeDomProviderStatic;
+            _fileStatic = fileStatic;
+        }
+
         private const string FileName = "file.cs";
-        public void WriteTypes(CodeCompileUnit codeCompileUnit, string directoryName)
+        public void WriteCompileUnits(CodeCompileUnit[] codeCompileUnit, string directoryName)
         {
             GenerateCSharpCode(codeCompileUnit,Path.Combine(directoryName,FileName));
         }
         public void GenerateCSharpCode(CodeCompileUnit codeCompileUnit, string fileName)
         {
             var provider = CodeDomProvider.CreateProvider("CSharp");
-            var options = new CodeGeneratorOptions {BracingStyle = "C"};
+            var options = new CodeGeneratorOptions { BracingStyle = "C" };
             using (var sourceWriter = new StreamWriter(fileName))
             {
                 provider.GenerateCodeFromCompileUnit(

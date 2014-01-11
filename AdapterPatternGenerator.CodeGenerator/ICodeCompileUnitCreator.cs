@@ -6,6 +6,6 @@ namespace AdapterPatternGenerator.CodeGenerator
 {
     public interface ICodeCompileUnitCreator
     {
-        CodeCompileUnit CreateCodeCompileUnit(IEnumerable<Type> types);
+        IEnumerable<CodeCompileUnit> CreateCodeCompileUnit(IEnumerable<Type> types);
     }
 }

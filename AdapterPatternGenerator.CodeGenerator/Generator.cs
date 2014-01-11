@@ -10,18 +10,18 @@ namespace AdapterPatternGenerator.CodeGenerator
     public class Generator:IGenerator
     {
         private readonly ICodeCompileUnitCreator _codeCompileUnitCreator;
-        private readonly ITypeWriter _typeWriter;
+        private readonly ICodeWriter _codeWriter;
 
-        public Generator(ICodeCompileUnitCreator codeCompileUnitCreator, ITypeWriter typeWriter)
+        public Generator(ICodeCompileUnitCreator codeCompileUnitCreator, ICodeWriter codeWriter)
         {
             _codeCompileUnitCreator = codeCompileUnitCreator;
-            _typeWriter = typeWriter;
+            _codeWriter = codeWriter;
         }
 
         public void GenerateCode(IEnumerable<Type> types, string directoryName)
         {
             var compileUnit = _codeCompileUnitCreator.CreateCodeCompileUnit(types);
-            _typeWriter.WriteTypes(compileUnit,directoryName);
+            _codeWriter.WriteCompileUnits(compileUnit,directoryName);
         }
     }
 

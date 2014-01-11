@@ -16,23 +16,34 @@ namespace AdapterPatternGenerator.CodeGenerator
             _typeDeclarationCreator = typeDeclarationCreator;
         }
 
-        public CodeCompileUnit CreateCodeCompileUnit(IEnumerable<Type> types)
+        public IEnumerable<CodeCompileUnit> CreateCodeCompileUnit(IEnumerable<Type> types)
         {
-            var codeCompileUnit = new CodeCompileUnit();
             var typesByNamespace = types.GroupBy(x => x.Namespace);
             foreach (var nameSpace in typesByNamespace)
             {
-                var codeNamespace = new CodeNamespace(nameSpace.Key);
                 foreach (var type in nameSpace)
                 {
-                    foreach (var typeDeclaration in _typeDeclarationCreator.CreateTypes(type))
-                    {
-                        codeNamespace.Types.Add(typeDeclaration);
-                    }
+                    var typeDeclarations = _typeDeclarationCreator.CreateTypes(type).ToList();
+                    var classes = typeDeclarations.Where(x => x.IsClass);
+                    yield return CreateCodeUnit(string.Format("Classes.{0}", nameSpace.Key), classes);
+                    var interfaces = typeDeclarations.Where(x => x.IsInterface);
+                    yield return CreateCodeUnit(string.Format("Interfaces.{0}", nameSpace.Key), interfaces);
                 }
-                codeCompileUnit.Namespaces.Add(codeNamespace);
             }
+        }
+
+        private CodeCompileUnit CreateCodeUnit(string namespaceName,
+            IEnumerable<CodeTypeDeclaration> codeTypeDeclarations)
+        {
+            var nameSpace = new CodeNamespace(namespaceName);
+            foreach (var codeTypeDeclaration in codeTypeDeclarations)
+            {
+                nameSpace.Types.Add(codeTypeDeclaration);
+            }
+            var codeCompileUnit = new CodeCompileUnit();
+            codeCompileUnit.Namespaces.Add(nameSpace);
             return codeCompileUnit;
         }
+
     }
 }

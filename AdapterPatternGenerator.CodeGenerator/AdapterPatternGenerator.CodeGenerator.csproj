@@ -43,10 +43,16 @@
     <Compile Include="Generator.cs" />
     <Compile Include="ICodeCompileUnitCreator.cs" />
     <Compile Include="ITypeDeclarationCreator.cs" />
-    <Compile Include="ITypeWriter.cs" />
+    <Compile Include="ICodeWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeDeclartionCreator.cs" />
-    <Compile Include="TypeWriter.cs" />
+    <Compile Include="CodeWriter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AdapterPatternGenerator.AdapterInterfaces\AdapterPatternGenerator.AdapterInterfaces.csproj">
+      <Project>{8C2FE823-F958-4113-B1E1-CC95ACAE2220}</Project>
+      <Name>AdapterPatternGenerator.AdapterInterfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
