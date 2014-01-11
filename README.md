@@ -1,4 +1,6 @@
-# Adapter Pattern Generator (in very early development)
+# Adapter Pattern Generator
+
+####Still in early development!
 
 Adapter Pattern  will be a Visual Studio add-in that allows a user to generate adapter patterns for selected assemblies.
 
