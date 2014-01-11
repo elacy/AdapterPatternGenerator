@@ -4,8 +4,9 @@
 
 Adapter Pattern  will be a Visual Studio add-in that allows a user to generate adapter patterns for selected assemblies.
 
-## Feature Overview
+## Overview of Potential Features
 - Generates interface and glue code for adapters
+- Refactors existing code that refers to adapted assemblies
 - Adapts Static Methods including Constructor
 - Avoids garbage collection issues
 - Copies documentation to classes and interfaces
