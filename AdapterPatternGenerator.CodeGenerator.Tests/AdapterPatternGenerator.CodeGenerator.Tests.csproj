@@ -47,18 +47,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeneratorFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\AdapterPatternGenerator.CodeGenerator\AdapterPatternGenerator.CodeGenerator.csproj">
       <Project>{a95b6861-426d-4389-9251-d391a7c46888}</Project>
       <Name>AdapterPatternGenerator.CodeGenerator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AdapterPatternGenerator.Example\AdapterPatternGenerator.Example.csproj">
+      <Project>{DE761CAA-7C53-4884-BBED-BB2510F238B1}</Project>
+      <Name>AdapterPatternGenerator.Example</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
