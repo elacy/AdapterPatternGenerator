@@ -11,7 +11,26 @@ namespace AdapterPatternGenerator.CodeGenerator
     {
         public List<CodeTypeDeclaration> CreateTypes(IEnumerable<Type> exportedTypes)
         {
-            return null;
+            return exportedTypes.SelectMany(CreateDeclarations).ToList();
+        }
+
+        private IEnumerable<CodeTypeDeclaration> CreateDeclarations(Type type)
+        {
+            yield return new CodeTypeDeclaration(string.Format("{0}Adapter", type.Name))
+            {
+            };
+            yield return new CodeTypeDeclaration(string.Format("I{0}Adapter", type.Name))
+            {
+                IsInterface = true
+            };
+            yield return new CodeTypeDeclaration(string.Format("{0}StaticAdapter", type.Name))
+            {
+            };
+            yield return new CodeTypeDeclaration(string.Format("I{0}StaticAdapter", type.Name))
+            {
+                IsInterface = true
+            };
+
         }
     }
 }
