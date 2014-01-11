@@ -3,7 +3,32 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdapterPatternGenerator.CodeGenerator", "AdapterPatternGenerator.CodeGenerator\AdapterPatternGenerator.CodeGenerator.csproj", "{A95B6861-426D-4389-9251-D391A7C46888}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdapterPatternGenerator.CodeGenerator.Tests", "AdapterPatternGenerator.CodeGenerator.Tests\AdapterPatternGenerator.CodeGenerator.Tests.csproj", "{4A2E08BC-BC1E-439F-B853-9EBE17F7C3A4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C6D4BA7B-035A-42AB-A811-B64E63868E43}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A95B6861-426D-4389-9251-D391A7C46888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A95B6861-426D-4389-9251-D391A7C46888}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A95B6861-426D-4389-9251-D391A7C46888}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A95B6861-426D-4389-9251-D391A7C46888}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A2E08BC-BC1E-439F-B853-9EBE17F7C3A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A2E08BC-BC1E-439F-B853-9EBE17F7C3A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A2E08BC-BC1E-439F-B853-9EBE17F7C3A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A2E08BC-BC1E-439F-B853-9EBE17F7C3A4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
