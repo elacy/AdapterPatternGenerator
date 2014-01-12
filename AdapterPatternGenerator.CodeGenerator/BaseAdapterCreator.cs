@@ -11,43 +11,33 @@ namespace AdapterPatternGenerator.CodeGenerator
             var codeNamespace = new CodeNamespace(namespaceName);
             unit.Namespaces.Add(codeNamespace);
 
-            var baseType = new CodeTypeDeclaration(Constants.BaseInstanceAdapterName);
+            var baseType = new CodeTypeDeclaration(Constants.BaseInstanceAdapterName)
+            {
+                TypeAttributes = TypeAttributes.Abstract | TypeAttributes.Public
+            };
             codeNamespace.Types.Add(baseType);
 
             var codeTypeParam = new CodeTypeParameter("T");
             baseType.TypeParameters.Add(codeTypeParam);
 
-            var constructor = new CodeConstructor();
-            baseType.Members.Add(constructor);
-
-            var constructorParam = new CodeParameterDeclarationExpression(codeTypeParam.Name, "adapterInstance");
-            constructor.Parameters.Add(constructorParam);
-            
-            return unit;
-        }
-        private CodeCompileUnit CreateBaseClass2(string baseNameSpace)
-        {
-            var codeCompileUnit = new CodeCompileUnit();
-            var nameSpace = new CodeNamespace(baseNameSpace);
-            codeCompileUnit.Namespaces.Add(nameSpace);
-            var codeTypeDeclaration = new CodeTypeDeclaration(Constants.BaseInstanceAdapterName);
-            nameSpace.Types.Add(codeTypeDeclaration);
-            var codeTypeParam = new CodeTypeParameter("T");
-            codeTypeDeclaration.TypeParameters.Add(codeTypeParam);
-            codeTypeDeclaration.TypeAttributes = TypeAttributes.Abstract | TypeAttributes.Public;
             var field = new CodeMemberField(codeTypeParam.Name, Constants.InternalAdapterFieldName)
             {
                 Attributes = MemberAttributes.FamilyAndAssembly
             };
-            codeTypeDeclaration.Members.Add(field);
+            baseType.Members.Add(field);
 
-            var constructor = new CodeConstructor { Attributes = MemberAttributes.Family };
-            var constructorParam = new CodeParameterDeclarationExpression(codeTypeParam.Name, "adaptedInstance");
+            var constructor = new CodeConstructor{Attributes = MemberAttributes.Family};
+            baseType.Members.Add(constructor);
+
+            var constructorParam = new CodeParameterDeclarationExpression(codeTypeParam.Name, "adapterInstance");
             constructor.Parameters.Add(constructorParam);
+
             var fieldReference = new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field.Name);
-            constructor.Statements.Add(new CodeAssignStatement(fieldReference, new CodeVariableReferenceExpression(constructorParam.Name)));
-            codeTypeDeclaration.Members.Add(constructor);
-            return codeCompileUnit;
+            var variableReference = new CodeVariableReferenceExpression(constructorParam.Name);
+            var statement = new CodeAssignStatement(fieldReference, variableReference);
+            constructor.Statements.Add(statement);
+
+            return unit;
         }
     }
 
