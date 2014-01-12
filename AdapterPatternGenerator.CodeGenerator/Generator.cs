@@ -18,7 +18,7 @@ namespace AdapterPatternGenerator.CodeGenerator
             _codeWriter = codeWriter;
         }
 
-        public void GenerateCode(IEnumerable<Type> types, string directoryName)
+        public void GenerateCode(List<Type> types, string directoryName)
         {
             var compileUnit = _codeCompileUnitCreator.CreateCodeCompileUnit(types);
             _codeWriter.WriteCompileUnits(compileUnit,directoryName);
@@ -27,6 +27,6 @@ namespace AdapterPatternGenerator.CodeGenerator
 
     public interface IGenerator
     {
-        void GenerateCode(IEnumerable<Type> assembly, string directoryName);
+        void GenerateCode(List<Type> assembly, string directoryName);
     }
 }

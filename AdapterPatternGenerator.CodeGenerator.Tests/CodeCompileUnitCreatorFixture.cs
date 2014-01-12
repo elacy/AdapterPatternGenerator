@@ -20,19 +20,22 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             {
 
             }
+
+            public readonly ITypeMap TypeMap = A.Fake<ITypeMap>();
             public readonly ITypeDeclarationCreator TypeDeclarationCreator = A.Fake<ITypeDeclarationCreator>();
         }
 
         private CodeCompileUnitCreator NewUp(Mocks mocks)
         {
-            return new CodeCompileUnitCreator(mocks.TypeDeclarationCreator);
+            return new CodeCompileUnitCreator(mocks.TypeDeclarationCreator,mocks.TypeMap);
         }
 
         [Test]
         public void GeneratesCorrectNameSpaces()
         {
             var codeCompileUnitCreator = NewUp(new Mocks());
-            var codeCompileUnits = codeCompileUnitCreator.CreateCodeCompileUnit(new[] { typeof(ExampleClass), typeof(ExampleDifferentNameSpaceClass) });
+            var types = new List<Type> { typeof(ExampleClass), typeof(ExampleDifferentNameSpaceClass) };
+            var codeCompileUnits = codeCompileUnitCreator.CreateCodeCompileUnit(types);
             var expectedNameSpaces = new[]
             {
                 "Interfaces.AdapterPatternGenerator.Example",
@@ -49,9 +52,11 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             var codeCompileUnitCreator = NewUp(mocks);
             var interfaces = new[] { new CodeTypeDeclaration { IsInterface = true }, new CodeTypeDeclaration { IsInterface = true } };
             var classes = new[] { new CodeTypeDeclaration(), new CodeTypeDeclaration() };
-            A.CallTo(() => mocks.TypeDeclarationCreator.CreateTypes(typeof(ExampleClass))).Returns(interfaces.Union(classes));
+            
+            A.CallTo(() => mocks.TypeDeclarationCreator.CreateTypes(typeof(ExampleClass), mocks.TypeMap)).Returns(interfaces.Union(classes));
 
-            var codeCompileUnits = codeCompileUnitCreator.CreateCodeCompileUnit(new[] { typeof(ExampleClass) }).ToList();
+            var types = new List<Type> { typeof(ExampleClass) };
+            var codeCompileUnits = codeCompileUnitCreator.CreateCodeCompileUnit(types).ToList();
             Assert.AreEqual(2,codeCompileUnits.Count());
 
             var namespaces = codeCompileUnits.SelectMany(x => x.Namespaces.Cast<CodeNamespace>()).ToList();
@@ -66,6 +71,22 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             Assert.IsNotNull(classNamespace);
 
             CollectionAssert.AreEquivalent(classes, classNamespace.Types);
+        }
+
+        [Test]
+        public void CallsAddMembers()
+        {
+            var mocks = new Mocks();
+            var codeCompileUnitCreator = NewUp(mocks);
+            var interfaces = new[] {new CodeTypeDeclaration {IsInterface = true}};
+
+            A.CallTo(() => mocks.TypeDeclarationCreator.CreateTypes(typeof(ExampleClass), mocks.TypeMap)).Returns(interfaces.Union(interfaces));
+
+            var types = new List<Type> { typeof(ExampleClass) };
+            var codeCompileUnits = codeCompileUnitCreator.CreateCodeCompileUnit(types).ToList();
+
+            A.CallTo(() => mocks.TypeDeclarationCreator.AddMembers(typeof (ExampleClass), mocks.TypeMap)).MustHaveHappened(Repeated.Exactly.Once);
+
         }
     }
 }

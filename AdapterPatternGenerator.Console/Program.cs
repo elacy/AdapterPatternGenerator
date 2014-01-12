@@ -21,10 +21,14 @@ namespace AdapterPatternGenerator.Console
         private const string CodeGenDirectory = @"c:\AdapterPatternGeneratorCodeGenDir";
         static void Main(string[] args)
         {
+            if (Directory.Exists(CodeGenDirectory))
+            {
+                Directory.Delete(CodeGenDirectory, true);
+            }
             Directory.CreateDirectory(CodeGenDirectory);
             var container = CreateContainer();
             var generator = container.Resolve<IGenerator>();
-            var types = Assembly.GetAssembly(typeof (ExampleClass)).ExportedTypes;
+            var types = Assembly.GetAssembly(typeof (ExampleClass)).ExportedTypes.ToList();
             generator.GenerateCode(types, CodeGenDirectory);
         }
 
@@ -38,6 +42,7 @@ namespace AdapterPatternGenerator.Console
             builder.RegisterType<DirectoryStaticAdapter>().As<IDirectoryStaticAdapter>();
             builder.RegisterType<StreamWriterStaticAdapter>().As<IStreamWriterStaticAdapter>();
             builder.RegisterType<CodeDomProviderStaticAdapter>().As<ICodeDomProviderStaticAdapter>();
+            builder.RegisterType<TypeMap>().As<ITypeMap>();
             return builder.Build();
         }
     }

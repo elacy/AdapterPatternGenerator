@@ -52,6 +52,7 @@
     <Compile Include="GeneratorFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeDeclarationCreaterFixture.cs" />
+    <Compile Include="TypeMapFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

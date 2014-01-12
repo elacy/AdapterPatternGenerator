@@ -14,6 +14,7 @@ namespace AdapterPatternGenerator.Example
         {
             get { return string.Empty; }
         }
+        internal string InternalProperty { get; set; }
 
         public string ExampleWriteOnlyProperty {  set{} }
     }

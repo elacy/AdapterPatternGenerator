@@ -10,26 +10,34 @@ namespace AdapterPatternGenerator.CodeGenerator
     public class CodeCompileUnitCreator : ICodeCompileUnitCreator
     {
         private readonly ITypeDeclarationCreator _typeDeclarationCreator;
+        private readonly ITypeMap _typeMap;
 
-        public CodeCompileUnitCreator(ITypeDeclarationCreator typeDeclarationCreator)
+        public CodeCompileUnitCreator(ITypeDeclarationCreator typeDeclarationCreator, ITypeMap typeMap)
         {
             _typeDeclarationCreator = typeDeclarationCreator;
+            _typeMap = typeMap;
         }
 
-        public IEnumerable<CodeCompileUnit> CreateCodeCompileUnit(IEnumerable<Type> types)
+        public IEnumerable<CodeCompileUnit> CreateCodeCompileUnit(List<Type> types)
         {
             var typesByNamespace = types.GroupBy(x => x.Namespace);
+            var codeCompileUnits = new List<CodeCompileUnit>();
             foreach (var nameSpace in typesByNamespace)
             {
                 foreach (var type in nameSpace)
                 {
-                    var typeDeclarations = _typeDeclarationCreator.CreateTypes(type).ToList();
+                    var typeDeclarations = _typeDeclarationCreator.CreateTypes(type, _typeMap).ToList();
                     var classes = typeDeclarations.Where(x => x.IsClass);
-                    yield return CreateCodeUnit(string.Format("Classes.{0}", nameSpace.Key), classes);
+                    codeCompileUnits.Add(CreateCodeUnit(string.Format("Classes.{0}", nameSpace.Key), classes)); ;
                     var interfaces = typeDeclarations.Where(x => x.IsInterface);
-                    yield return CreateCodeUnit(string.Format("Interfaces.{0}", nameSpace.Key), interfaces);
+                    codeCompileUnits.Add(CreateCodeUnit(string.Format("Interfaces.{0}", nameSpace.Key), interfaces));
                 }
             }
+            foreach (var type in types)
+            {
+                _typeDeclarationCreator.AddMembers(type,_typeMap);
+            }
+            return codeCompileUnits;
         }
 
         private CodeCompileUnit CreateCodeUnit(string namespaceName,
