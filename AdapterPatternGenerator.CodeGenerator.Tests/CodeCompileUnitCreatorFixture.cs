@@ -32,6 +32,8 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         }
 
         private const string BaseNameSpace = "BaseNameSpace";
+        private const string BaseClassNameSpace = BaseNameSpace + "." + Constants.ClassesNamespace;
+        private const string BaseInterfaceNameSpace = BaseNameSpace +"." + Constants.InterfacesNamespace;
 
         [Test]
         public void AddsBaseAdapter()
@@ -43,7 +45,6 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             A.CallTo(() => mocks.BaseAdapterCreator.CreateBaseClass(BaseNameSpace)).Returns(codeCompileUnit);
             var codeCompileUnits = codeCompileUnitCreator.CreateCodeCompileUnit(types, BaseNameSpace);
             Assert.AreSame(codeCompileUnit, codeCompileUnits.First());
-
         }
 
         [Test]
@@ -54,10 +55,10 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             var codeCompileUnits = codeCompileUnitCreator.CreateCodeCompileUnit(types, BaseNameSpace);
             var expectedNameSpaces = new[]
             {
-                "BaseNameSpace.Interfaces.AdapterPatternGenerator.Example",
-                "BaseNameSpace.Classes.AdapterPatternGenerator.Example",
-                "BaseNameSpace.Interfaces.AdapterPatternGenerator.Example.DifferentNameSpace",
-                "BaseNameSpace.Classes.AdapterPatternGenerator.Example.DifferentNameSpace"
+                BaseInterfaceNameSpace+".AdapterPatternGenerator.Example",
+                BaseClassNameSpace+".AdapterPatternGenerator.Example",
+                BaseInterfaceNameSpace+".AdapterPatternGenerator.Example.DifferentNameSpace",
+                BaseClassNameSpace+".AdapterPatternGenerator.Example.DifferentNameSpace"
             };
             CollectionAssert.AreEquivalent(expectedNameSpaces, codeCompileUnits.SelectMany(x => x.Namespaces.Cast<CodeNamespace>()).Select(x => x.Name));
         }
@@ -81,13 +82,13 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             var namespaces = codeCompileUnits.SelectMany(x => x.Namespaces.Cast<CodeNamespace>()).ToList();
             Assert.AreEqual(2, namespaces.Count);
 
-            var interfaceNamespace = namespaces.FirstOrDefault(x => x.Name == "BaseNameSpace.Interfaces.AdapterPatternGenerator.Example");
+            var interfaceNamespace = namespaces.FirstOrDefault(x => x.Name == BaseInterfaceNameSpace + ".AdapterPatternGenerator.Example");
             Assert.IsNotNull(interfaceNamespace);
 
             Assert.AreSame(interFaceTypeHandler.Declaration, interfaceNamespace.Types[0]);
             Assert.AreSame(interFaceTypeHandler.Declaration, interfaceNamespace.Types[1]);
 
-            var classNamespace = namespaces.FirstOrDefault(x => x.Name == "BaseNameSpace.Classes.AdapterPatternGenerator.Example");
+            var classNamespace = namespaces.FirstOrDefault(x => x.Name == BaseClassNameSpace + ".AdapterPatternGenerator.Example");
             Assert.IsNotNull(classNamespace);
 
             Assert.AreSame(classTypeHandler.Declaration, classNamespace.Types[0]);

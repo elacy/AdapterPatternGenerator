@@ -22,6 +22,7 @@ namespace AdapterPatternGenerator.CodeGenerator
         {
             var compileUnit = _codeCompileUnitCreator.CreateCodeCompileUnit(types,baseNameSpace);
             _codeWriter.WriteCompileUnits(compileUnit,directoryName);
+            
         }
     }
 

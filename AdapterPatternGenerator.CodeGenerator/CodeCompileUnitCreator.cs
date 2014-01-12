@@ -31,9 +31,10 @@ namespace AdapterPatternGenerator.CodeGenerator
                 foreach (var type in nameSpace)
                 {
                     var classTypes =new [] { AddTypeDeclaration(handlers, type, true, false),AddTypeDeclaration(handlers, type, false, false) };
-                    codeCompileUnits.Add(CreateCodeUnit(string.Format("{0}.Classes.{1}", baseNameSpace,nameSpace.Key), classTypes));
+
+                    codeCompileUnits.Add(CreateCodeUnit(string.Format("{0}.{1}.{2}", baseNameSpace,Constants.ClassesNamespace,nameSpace.Key), classTypes));
                     var interfaceTypes = new[] { AddTypeDeclaration(handlers, type, true, true), AddTypeDeclaration(handlers, type, false, true) };
-                    codeCompileUnits.Add(CreateCodeUnit(string.Format("{0}.Interfaces.{1}", baseNameSpace, nameSpace.Key), interfaceTypes));
+                    codeCompileUnits.Add(CreateCodeUnit(string.Format("{0}.{1}.{2}", baseNameSpace, Constants.InterfacesNamespace, nameSpace.Key), interfaceTypes));
                 }
             }
             foreach (var handler in handlers)
