@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AdapterPatternGenerator.AdapterClasses;
 using AdapterPatternGenerator.AdapterClasses.System.CodeDom.Compiler;
 using AdapterPatternGenerator.AdapterClasses.System.IO;
 using AdapterPatternGenerator.AdapterInterfaces.System.CodeDom.Compiler;
@@ -19,6 +20,7 @@ namespace AdapterPatternGenerator.Console
     class Program
     {
         private const string CodeGenDirectory = @"c:\AdapterPatternGeneratorCodeGenDir";
+        private const string BaseNameSpace = @"AdapterPatternGenerator";
         static void Main(string[] args)
         {
             if (Directory.Exists(CodeGenDirectory))
@@ -29,19 +31,20 @@ namespace AdapterPatternGenerator.Console
             var container = CreateContainer();
             var generator = container.Resolve<IGenerator>();
             var types = Assembly.GetAssembly(typeof (ExampleClass)).ExportedTypes.ToList();
-            generator.GenerateCode(types, CodeGenDirectory);
+            generator.GenerateCode(types, CodeGenDirectory, BaseNameSpace);
         }
 
         private static IContainer CreateContainer()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<TypeDeclarationCreator>().As<ITypeDeclarationCreator>();
+            builder.RegisterType<TypeDeclarationHandlerFactory>().As<ITypeDeclarationHandlerFactory>();
             builder.RegisterType<CodeWriter>().As<ICodeWriter>();
             builder.RegisterType<CodeCompileUnitCreator>().As<ICodeCompileUnitCreator>();
             builder.RegisterType<Generator>().As<IGenerator>();
             builder.RegisterType<DirectoryStaticAdapter>().As<IDirectoryStaticAdapter>();
             builder.RegisterType<StreamWriterStaticAdapter>().As<IStreamWriterStaticAdapter>();
             builder.RegisterType<CodeDomProviderStaticAdapter>().As<ICodeDomProviderStaticAdapter>();
+            builder.RegisterType<BaseAdapterCreator>().As<IBaseAdapterCreator>();
             builder.RegisterType<TypeMap>().As<ITypeMap>();
             return builder.Build();
         }

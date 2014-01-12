@@ -17,5 +17,9 @@ namespace AdapterPatternGenerator.Example
         internal string InternalProperty { get; set; }
 
         public string ExampleWriteOnlyProperty {  set{} }
+
+        public static string StaticProperty { get; set; }
+
+        public static int AnotherStaticProperty { get; set; }
     }
 }

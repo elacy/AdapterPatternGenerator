@@ -18,15 +18,15 @@ namespace AdapterPatternGenerator.CodeGenerator
             _codeWriter = codeWriter;
         }
 
-        public void GenerateCode(List<Type> types, string directoryName)
+        public void GenerateCode(List<Type> types, string directoryName, string baseNameSpace)
         {
-            var compileUnit = _codeCompileUnitCreator.CreateCodeCompileUnit(types);
+            var compileUnit = _codeCompileUnitCreator.CreateCodeCompileUnit(types,baseNameSpace);
             _codeWriter.WriteCompileUnits(compileUnit,directoryName);
         }
     }
 
     public interface IGenerator
     {
-        void GenerateCode(List<Type> assembly, string directoryName);
+        void GenerateCode(List<Type> assembly, string directoryName, string baseNameSpace);
     }
 }

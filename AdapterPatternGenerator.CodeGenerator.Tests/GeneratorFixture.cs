@@ -21,12 +21,13 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             var generator = new Generator(codeCompileUnitCreator, typeWriter);
             var types = new List<Type>();
             const string directoryName = "directoryName";
+            const string baseNameSpace = "baseNameSpace";
             var codeCompileUnits = new[] {new CodeCompileUnit()};
-            A.CallTo(() => codeCompileUnitCreator.CreateCodeCompileUnit(types)).Returns(codeCompileUnits);
+            A.CallTo(() => codeCompileUnitCreator.CreateCodeCompileUnit(types, baseNameSpace)).Returns(codeCompileUnits);
 
-            generator.GenerateCode(types, directoryName);
+            generator.GenerateCode(types, directoryName, baseNameSpace);
 
-            A.CallTo(() => codeCompileUnitCreator.CreateCodeCompileUnit(types)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => codeCompileUnitCreator.CreateCodeCompileUnit(types,baseNameSpace)).MustHaveHappened(Repeated.Exactly.Once);
             A.CallTo(() => typeWriter.WriteCompileUnits(codeCompileUnits, directoryName)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
