@@ -1,4 +1,5 @@
 ﻿using System.CodeDom;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace AdapterPatternGenerator.CodeGenerator

@@ -24,16 +24,16 @@ namespace AdapterPatternGenerator.CodeGenerator
         public IEnumerable<CodeCompileUnit> CreateCodeCompileUnit(List<Type> types,string baseNameSpace)
         {
             var typesByNamespace = types.GroupBy(x => x.Namespace);
-            var codeCompileUnits = new List<CodeCompileUnit>{_baseAdapterCreator.CreateBaseClass(baseNameSpace)};
+            var codeCompileUnits = new List<CodeCompileUnit>{_baseAdapterCreator.CreateBaseClass(baseNameSpace +"."+Constants.ClassesNamespace)};
             var handlers = new List<ITypeDeclarationHandler>();
             foreach (var nameSpace in typesByNamespace)
             {
                 foreach (var type in nameSpace)
                 {
-                    var classTypes =new [] { AddTypeDeclaration(handlers, type, true, false),AddTypeDeclaration(handlers, type, false, false) };
+                    var classTypes =new [] { AddTypeDeclaration(handlers, type,baseNameSpace, true, false),AddTypeDeclaration(handlers, type,baseNameSpace, false, false) };
 
                     codeCompileUnits.Add(CreateCodeUnit(string.Format("{0}.{1}.{2}", baseNameSpace,Constants.ClassesNamespace,nameSpace.Key), classTypes));
-                    var interfaceTypes = new[] { AddTypeDeclaration(handlers, type, true, true), AddTypeDeclaration(handlers, type, false, true) };
+                    var interfaceTypes = new[] { AddTypeDeclaration(handlers, type,baseNameSpace, true, true), AddTypeDeclaration(handlers, type,baseNameSpace, false, true) };
                     codeCompileUnits.Add(CreateCodeUnit(string.Format("{0}.{1}.{2}", baseNameSpace, Constants.InterfacesNamespace, nameSpace.Key), interfaceTypes));
                 }
             }
@@ -44,9 +44,9 @@ namespace AdapterPatternGenerator.CodeGenerator
             return codeCompileUnits;
         }
 
-        private CodeTypeDeclaration AddTypeDeclaration(List<ITypeDeclarationHandler> handlers, Type type, bool isStatic, bool isInterface)
+        private CodeTypeDeclaration AddTypeDeclaration(List<ITypeDeclarationHandler> handlers, Type type, string baseNamespace, bool isStatic, bool isInterface)
         {
-            var handler = _typeDeclarationHandler.Create(type, isInterface, isStatic);
+            var handler = _typeDeclarationHandler.Create(type, baseNamespace, isInterface, isStatic);
             handlers.Add(handler);
             _typeMap.Add(type, handler.Declaration, isInterface && !isStatic);
             return handler.Declaration;

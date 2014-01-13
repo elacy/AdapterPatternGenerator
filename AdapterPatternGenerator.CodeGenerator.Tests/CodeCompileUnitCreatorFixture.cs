@@ -42,7 +42,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             var codeCompileUnitCreator = NewUp(mocks);
             var types = new List<Type> { typeof(ExampleClass), typeof(ExampleDifferentNameSpaceClass) };
             var codeCompileUnit = new CodeCompileUnit();
-            A.CallTo(() => mocks.BaseAdapterCreator.CreateBaseClass(BaseNameSpace)).Returns(codeCompileUnit);
+            A.CallTo(() => mocks.BaseAdapterCreator.CreateBaseClass(BaseClassNameSpace)).Returns(codeCompileUnit);
             var codeCompileUnits = codeCompileUnitCreator.CreateCodeCompileUnit(types, BaseNameSpace);
             Assert.AreSame(codeCompileUnit, codeCompileUnits.First());
         }
@@ -72,8 +72,8 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             A.CallTo(() => interFaceTypeHandler.IsInterface).Returns(true);
             var classTypeHandler = A.Fake<ITypeDeclarationHandler>();
             var type = typeof (ExampleClass);
-            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, true, A<bool>.Ignored)).Returns(interFaceTypeHandler);
-            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, false, A<bool>.Ignored)).Returns(classTypeHandler);
+            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type,BaseNameSpace, true, A<bool>.Ignored)).Returns(interFaceTypeHandler);
+            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, BaseNameSpace, false, A<bool>.Ignored)).Returns(classTypeHandler);
 
             var types = new List<Type> { type };
             var codeCompileUnits = codeCompileUnitCreator.CreateCodeCompileUnit(types, BaseNameSpace).ToList();
@@ -104,7 +104,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
 
             var classTypeHandler = A.Fake<ITypeDeclarationHandler>();
             var type = typeof(ExampleClass);
-            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, A<bool>.Ignored, A<bool>.Ignored)).Returns(classTypeHandler);
+            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type,BaseNameSpace, A<bool>.Ignored, A<bool>.Ignored)).Returns(classTypeHandler);
             
 
             var types = new List<Type> { typeof(ExampleClass) };
@@ -124,10 +124,10 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             A.CallTo(() => interFaceTypeHandler.IsInterface).Returns(true);
             var otherTypeHandler = A.Fake<ITypeDeclarationHandler>();
             var type = typeof(ExampleClass);
-            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, true, true)).Returns(otherTypeHandler);
-            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, false, true)).Returns(otherTypeHandler);
-            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, false, false)).Returns(otherTypeHandler);
-            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, true, false)).Returns(interFaceTypeHandler);
+            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, BaseNameSpace, true, true)).Returns(otherTypeHandler);
+            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, BaseNameSpace, false, true)).Returns(otherTypeHandler);
+            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, BaseNameSpace, false, false)).Returns(otherTypeHandler);
+            A.CallTo(() => mocks.TypeDeclarationHandlerFactory.Create(type, BaseNameSpace, true, false)).Returns(interFaceTypeHandler);
 
             var types = new List<Type> { typeof(ExampleClass) };
             codeCompileUnitCreator.CreateCodeCompileUnit(types, BaseNameSpace).ToList();

@@ -10,14 +10,16 @@ namespace AdapterPatternGenerator.CodeGenerator
 {
     public class TypeDeclarationHandler:ITypeDeclarationHandler
     {
+        private readonly string _baseNamespace;
         public Type Type { get; private set; }
         public string Name { get { return Declaration.Name; } }
         public CodeTypeDeclaration Declaration { get; set; }
         public bool IsInterface { get { return Declaration.IsInterface; }}
         public bool IsStatic { get; private set; }
 
-        public TypeDeclarationHandler(Type type, CodeTypeDeclaration codeTypeDeclaration, bool isStatic)
+        public TypeDeclarationHandler(Type type,string baseNamespace, CodeTypeDeclaration codeTypeDeclaration, bool isStatic)
         {
+            _baseNamespace = baseNamespace;
             Type = type;
             Declaration = codeTypeDeclaration;
             IsStatic = isStatic;

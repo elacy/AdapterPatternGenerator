@@ -105,5 +105,6 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             Assert.AreEqual(MemberAttributes.FamilyAndAssembly, field.Attributes);
         }
 
+
     }
 }

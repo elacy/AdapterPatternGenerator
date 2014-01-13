@@ -25,12 +25,12 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                 "StaticProperty",
                 "AnotherStaticProperty"
             };
-
+        private const string BaseNamespace = "BaseNameSpace";
         [Test]
         public void AddsMembersAddsInstancePropertiesWithRightNamesToInterface()
         {
             var codeTypeDeclaration = new CodeTypeDeclaration("IExampleClassAdapter") {IsInterface = true};
-            var handler = new TypeDeclarationHandler(typeof(ExampleClass), codeTypeDeclaration, false);
+            var handler = new TypeDeclarationHandler(typeof(ExampleClass),BaseNamespace, codeTypeDeclaration, false);
             var typeMap = A.Fake<ITypeMap>();
             handler.AddMembers(typeMap);
             var expected = ExampleInstanceProperties;
@@ -41,7 +41,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         public void AddsMembersAddsStaticPropertiesWithRightNamesToStaticInterface()
         {
             var codeTypeDeclaration = new CodeTypeDeclaration("IExampleClassStaticAdapter") { IsInterface = true };
-            var handler = new TypeDeclarationHandler(typeof(ExampleClass), codeTypeDeclaration, true);
+            var handler = new TypeDeclarationHandler(typeof(ExampleClass),BaseNamespace, codeTypeDeclaration, true);
             var typeMap = A.Fake<ITypeMap>();
             handler.AddMembers(typeMap);
             var expected = ExampleStaticProperties;
@@ -53,7 +53,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         public void AddsMembersAddsInstancePropertiesToInterfaceWithCorrectType()
         {
             var codeTypeDeclaration = new CodeTypeDeclaration("IExampleClassAdapter") { IsInterface = true };
-            var handler = new TypeDeclarationHandler(typeof(ExampleClass), codeTypeDeclaration, false);
+            var handler = new TypeDeclarationHandler(typeof(ExampleClass),BaseNamespace, codeTypeDeclaration, false);
             var typeMap = A.Fake<ITypeMap>();
             handler.AddMembers(typeMap);
             Assert.IsTrue(codeTypeDeclaration.Members.OfType<CodeMemberProperty>().All(x => x.Type.BaseType == "System.String"));
@@ -62,7 +62,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         public void AddsMembersAddsInstancePropertiesWithRightAccessToInterface()
         {
             var codeTypeDeclaration = new CodeTypeDeclaration("IExampleClassStaticAdapter") { IsInterface = true };
-            var handler = new TypeDeclarationHandler(typeof(ExampleClass), codeTypeDeclaration, false);
+            var handler = new TypeDeclarationHandler(typeof(ExampleClass),BaseNamespace, codeTypeDeclaration, false);
             var typeMap = A.Fake<ITypeMap>();
             handler.AddMembers(typeMap);
             var properties = codeTypeDeclaration.Members.OfType<CodeMemberProperty>().ToList();
