@@ -12,23 +12,24 @@ namespace AdapterPatternGenerator.CodeGenerator
             var codeNamespace = new CodeNamespace(namespaceName);
             unit.Namespaces.Add(codeNamespace);
 
-            var baseType = new CodeTypeDeclaration(Constants.BaseInstanceAdapterName)
+            var baseInstance = new CodeTypeDeclaration(Constants.BaseInstanceAdapterName)
             {
-                TypeAttributes = TypeAttributes.Abstract | TypeAttributes.Public
+                TypeAttributes = TypeAttributes.Abstract | TypeAttributes.Public,
+                IsPartial = true
             };
-            codeNamespace.Types.Add(baseType);
+            codeNamespace.Types.Add(baseInstance);
 
             var codeTypeParam = new CodeTypeParameter("T");
-            baseType.TypeParameters.Add(codeTypeParam);
+            baseInstance.TypeParameters.Add(codeTypeParam);
 
             var field = new CodeMemberField(codeTypeParam.Name, Constants.InternalAdapterFieldName)
             {
                 Attributes = MemberAttributes.FamilyAndAssembly
             };
-            baseType.Members.Add(field);
+            baseInstance.Members.Add(field);
 
             var constructor = new CodeConstructor{Attributes = MemberAttributes.Family};
-            baseType.Members.Add(constructor);
+            baseInstance.Members.Add(constructor);
 
             var constructorParam = new CodeParameterDeclarationExpression(codeTypeParam.Name, "adapterInstance");
             constructor.Parameters.Add(constructorParam);

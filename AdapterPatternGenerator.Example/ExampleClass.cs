@@ -21,5 +21,15 @@ namespace AdapterPatternGenerator.Example
         public static string StaticProperty { get; set; }
 
         public static int AnotherStaticProperty { get; set; }
+
+        public static int StaticField = 4;
+
+        public readonly int ReadonlyField = 4;
+
+        public const string ConstTest = "Test";
+
+        
+
+        public int Field = 4;
     }
 }

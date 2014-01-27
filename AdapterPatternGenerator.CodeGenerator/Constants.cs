@@ -12,5 +12,7 @@ namespace AdapterPatternGenerator.CodeGenerator
         public const string InternalAdapterFieldName = "AdapterInstance";
         public const string InterfacesNamespace = "AdapterInterfaces";
         public const string ClassesNamespace = "AdapterClasses";
+        public const string GeneratedLanguage = "CSharp";
+        public const string GeneratedBracingStyle = "C";
     }
 }

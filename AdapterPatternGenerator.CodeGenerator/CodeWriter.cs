@@ -25,11 +25,10 @@ namespace AdapterPatternGenerator.CodeGenerator
             _directoryStaticAdapter = directoryStaticAdapter;
         }
 
-        private const string FileName = "file.cs";
         public void WriteCompileUnits(IEnumerable<CodeCompileUnit> codeCompileUnits, string directoryName)
         {
-            var provider = _codeDomProviderStaticAdapter.CreateProvider("CSharp");
-            var options = new CodeGeneratorOptions { BracingStyle = "C" };
+            var provider = _codeDomProviderStaticAdapter.CreateProvider(Constants.GeneratedLanguage);
+            var options = new CodeGeneratorOptions { BracingStyle = Constants.GeneratedBracingStyle };
             foreach (var codeCompileUnit in codeCompileUnits)
             {
                 _directoryStaticAdapter.CreateDirectory(GetPath(directoryName,codeCompileUnit,false));

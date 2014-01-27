@@ -28,25 +28,10 @@ namespace AdapterPatternGenerator.Console
                 Directory.Delete(CodeGenDirectory, true);
             }
             Directory.CreateDirectory(CodeGenDirectory);
-            var container = CreateContainer();
-            var generator = container.Resolve<IGenerator>();
+            var ioc = new ConsoleIoc();
+            var generator = ioc.Resolve<IGenerator>();
             var types = Assembly.GetAssembly(typeof (ExampleClass)).ExportedTypes.ToList();
             generator.GenerateCode(types, CodeGenDirectory, BaseNameSpace);
-        }
-
-        private static IContainer CreateContainer()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterType<TypeDeclarationHandlerFactory>().As<ITypeDeclarationHandlerFactory>();
-            builder.RegisterType<CodeWriter>().As<ICodeWriter>();
-            builder.RegisterType<CodeCompileUnitCreator>().As<ICodeCompileUnitCreator>();
-            builder.RegisterType<Generator>().As<IGenerator>();
-            builder.RegisterType<DirectoryStaticAdapter>().As<IDirectoryStaticAdapter>();
-            builder.RegisterType<StreamWriterStaticAdapter>().As<IStreamWriterStaticAdapter>();
-            builder.RegisterType<CodeDomProviderStaticAdapter>().As<ICodeDomProviderStaticAdapter>();
-            builder.RegisterType<BaseAdapterCreator>().As<IBaseAdapterCreator>();
-            builder.RegisterType<TypeMap>().As<ITypeMap>();
-            return builder.Build();
         }
     }
 }

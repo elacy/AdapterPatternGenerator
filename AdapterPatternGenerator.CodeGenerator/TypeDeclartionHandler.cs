@@ -33,6 +33,23 @@ namespace AdapterPatternGenerator.CodeGenerator
             {
                 AddProperty(Declaration, property);
             }
+            var fields = Type.GetFields(staticFlag | BindingFlags.Public);
+            foreach (var field in fields)
+            {
+                AddField(Declaration, field);
+            }
+        }
+
+        private void AddField(CodeTypeDeclaration codeTypeDeclaration, FieldInfo fieldInfo)
+        {
+            var property = new CodeMemberProperty
+            {
+                Name = fieldInfo.Name,
+                Type = new CodeTypeReference(fieldInfo.FieldType),
+                HasSet = !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral ,
+                HasGet = true,
+            };
+            codeTypeDeclaration.Members.Add(property);
         }
 
         private void AddProperty(CodeTypeDeclaration codeTypeDeclaration, PropertyInfo propertyInfo)

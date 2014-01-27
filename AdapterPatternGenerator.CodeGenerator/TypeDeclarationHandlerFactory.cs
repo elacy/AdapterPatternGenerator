@@ -14,6 +14,7 @@ namespace AdapterPatternGenerator.CodeGenerator
             var codeTypeDeclaration = new CodeTypeDeclaration(GetTypeName(type, isInterface, isStatic))
             {
                 IsInterface = isInterface,
+                IsPartial = true
             };
             if (!isInterface && !isStatic)
             {
