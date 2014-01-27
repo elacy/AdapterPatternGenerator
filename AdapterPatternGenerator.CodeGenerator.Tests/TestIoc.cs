@@ -24,13 +24,6 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             _container = builder.Build();
         }
 
-        public ICodeDomProviderAdapter GetCodeDomProviderAdapter(string language)
-        {
-            var codeDomProviderAdapter = A.Fake<ICodeDomProviderAdapter>();
-            A.CallTo(() => CodeDomProviderStaticAdapter.CreateProvider(language)).Returns(codeDomProviderAdapter);
-            return codeDomProviderAdapter;
-        }
-
         public T Resolve<T>()
         {
             return _container.Resolve<T>();

@@ -11,8 +11,9 @@ namespace AdapterPatternGenerator.CodeGenerator
     public class TypeMap:ITypeMap
     {
         readonly Dictionary<Type, CodeTypeDeclaration> _defaultTypes = new Dictionary<Type, CodeTypeDeclaration>();
-        readonly Dictionary<Type, List<CodeTypeDeclaration>> _allTypes = new Dictionary<Type, List<CodeTypeDeclaration>>(); 
-        public bool Add(Type type, CodeTypeDeclaration codeTypeDeclaration, bool defaultTypeDeclaration)
+        readonly Dictionary<Type, List<CodeTypeDeclaration>> _allTypes = new Dictionary<Type, List<CodeTypeDeclaration>>();
+        readonly Dictionary<CodeTypeDeclaration, CodeTypeReference> _references = new Dictionary<CodeTypeDeclaration, CodeTypeReference>(); 
+        public bool Add(Type type, CodeTypeDeclaration codeTypeDeclaration, bool defaultTypeDeclaration, string baseNameSpace)
         {
             if (defaultTypeDeclaration)
             {
@@ -26,6 +27,8 @@ namespace AdapterPatternGenerator.CodeGenerator
             {
                 _allTypes.Add(type, new List<CodeTypeDeclaration>{codeTypeDeclaration});
             }
+            _references.Add(codeTypeDeclaration,new CodeTypeReference());
+
             return true;
 
         }
@@ -51,7 +54,7 @@ namespace AdapterPatternGenerator.CodeGenerator
 
     public interface ITypeMap
     {
-        bool Add(Type type, CodeTypeDeclaration codeTypeDeclaration, bool defaultTypeDeclaration);
+        bool Add(Type type, CodeTypeDeclaration codeTypeDeclaration, bool defaultTypeDeclaration, string baseNameSpace);
         CodeTypeDeclaration GetDefault(Type type);
         List<CodeTypeDeclaration> GetAll(Type type);
     }
