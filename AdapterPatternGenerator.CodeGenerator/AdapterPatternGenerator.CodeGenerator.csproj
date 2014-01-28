@@ -39,17 +39,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseAdapterCreator.cs" />
     <Compile Include="CodeCompileUnitCreator.cs" />
+    <Compile Include="CodeDomExtensions.cs" />
+    <Compile Include="CodeGenerationItems\AdapterItem.cs" />
+    <Compile Include="CodeGenerationItems\BaseInstanceAdapterItem.cs" />
+    <Compile Include="CodeGenerationItems\CodeGenerationItem.cs" />
+    <Compile Include="CodeGenerationItems\CopyCodeGenerationItem.cs" />
+    <Compile Include="CodeGenerationItems\EnumItem.cs" />
+    <Compile Include="CodeGenerationItems\FromTypeCodeGenerationItem.cs" />
+    <Compile Include="CodeGenerationItems\InstanceAdapterItem.cs" />
+    <Compile Include="CodeGenerationItems\InstanceInterfaceAdapterItem.cs" />
+    <Compile Include="CodeGenerationItems\InterfaceItem.cs" />
+    <Compile Include="CodeGenerationItems\StaticAdapterItem.cs" />
+    <Compile Include="CodeGenerationItems\StaticInterfaceAdapterItem.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="ICodeCompileUnitCreator.cs" />
-    <Compile Include="ITypeDeclarationHandlerFactory.cs" />
-    <Compile Include="ITypeDeclarationHandler.cs" />
     <Compile Include="ICodeWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeDeclarationHandlerFactory.cs" />
-    <Compile Include="TypeDeclartionHandler.cs" />
     <Compile Include="CodeWriter.cs" />
     <Compile Include="TypeMap.cs" />
   </ItemGroup>

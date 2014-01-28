@@ -22,8 +22,12 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         }
 
 
-        
 
+        //public Dictionary<string, int> TestDictionary = new Dictionary<string, int>();
+
+        //public List<List<int>> NestedType { get; set; }
+
+        //public ExampleSealedClass ExampleSealedClass { get; set; }
         private readonly ExpectedProperty[] _expectedInstanceProperties = new[]
             {
                 new ExpectedProperty("ExampleProperty",typeof(string), true, true),
@@ -31,6 +35,10 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                 new ExpectedProperty("ExampleWriteOnlyProperty",typeof(string), false, true),
                 new ExpectedProperty("Field",typeof(int), true, true),
                 new ExpectedProperty("ReadonlyField",typeof(int), true, false),
+                new ExpectedProperty("AnotherExampleClass",BaseNameSpace + "." + Constants.InterfacesNamespace + ".AdapterPatternGenerator.Example.IExampleClassAdapter", true, true),
+                //new ExpectedProperty("List",typeof(List<int>), true, true),
+                //new ExpectedProperty("TestDictionary",typeof(Dictionary<string,int>), true, true),
+                //new ExpectedProperty("NestedType",typeof(List<List<int>>), true, true),
             };
 
         private void AssertAreEquivalent(ExpectedProperty[] expected,
@@ -43,6 +51,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                 select new {expectedProp, actualProp};
             foreach (var item in query)
             {
+                Assert.AreEqual(item.expectedProp.Type,item.actualProp.Type.BaseType);
                 Assert.AreEqual(item.expectedProp.CanRead, item.actualProp.HasGet);
                 Assert.AreEqual(item.expectedProp.CanWrite, item.actualProp.HasSet,item.actualProp.Name);
             }
@@ -70,7 +79,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                 new ExpectedProperty("StaticProperty",typeof(string), true, true),
                 new ExpectedProperty("AnotherStaticProperty",typeof(int), true, true),
                 new ExpectedProperty("StaticField",typeof(int), true, true),
-                new ExpectedProperty("ConstTest",typeof(int), true, false),
+                new ExpectedProperty("ConstTest",typeof(string), true, false),
             };
         [Test]
         public void StaticClassHasCorrectProperties()

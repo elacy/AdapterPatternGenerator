@@ -28,8 +28,13 @@ namespace AdapterPatternGenerator.Example
 
         public const string ConstTest = "Test";
 
-        
+        //public Dictionary<string,int> TestDictionary = new Dictionary<string, int>();
+
+        //public List<List<int>> NestedType { get; set; } 
+
+        public ExampleClass AnotherExampleClass { get; set; }
 
         public int Field = 4;
+        //public List<int> List { get; set; } 
     }
 }

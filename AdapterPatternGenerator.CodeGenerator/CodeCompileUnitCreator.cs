@@ -5,65 +5,63 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AdapterPatternGenerator.CodeGenerator.CodeGenerationItems;
 
 namespace AdapterPatternGenerator.CodeGenerator
 {
     public class CodeCompileUnitCreator : ICodeCompileUnitCreator
     {
-        private readonly ITypeDeclarationHandlerFactory _typeDeclarationHandler;
         private readonly ITypeMap _typeMap;
-        private readonly IBaseAdapterCreator _baseAdapterCreator;
 
-        public CodeCompileUnitCreator(ITypeDeclarationHandlerFactory typeDeclarationHandler, ITypeMap typeMap, IBaseAdapterCreator baseAdapterCreator)
+        public CodeCompileUnitCreator(ITypeMap typeMap)
         {
-            _typeDeclarationHandler = typeDeclarationHandler;
             _typeMap = typeMap;
-            _baseAdapterCreator = baseAdapterCreator;
+
         }
 
-        public IEnumerable<CodeCompileUnit> CreateCodeCompileUnit(List<Type> types,string baseNameSpace)
+        public IEnumerable<CodeCompileUnit> CreateCodeCompileUnit(List<Type> types, string baseNameSpace)
         {
-            var typesByNamespace = types.GroupBy(x => x.Namespace);
-            var codeCompileUnits = new List<CodeCompileUnit>{_baseAdapterCreator.CreateBaseClass(baseNameSpace +"."+Constants.ClassesNamespace)};
-            var handlers = new List<ITypeDeclarationHandler>();
-            foreach (var nameSpace in typesByNamespace)
+            var items = new List<CodeGenerationItem>();
+            var baseInstanceClass = new BaseInstanceAdapterItem(baseNameSpace);
+            _typeMap.BaseInstanceClass = baseInstanceClass.CodeTypeReference;
+            items.Add(baseInstanceClass);
+            foreach (var type in types)
             {
-                foreach (var type in nameSpace)
+                if (type.IsEnum)
                 {
-                    var classTypes =new [] { AddTypeDeclaration(handlers, type,baseNameSpace, true, false),AddTypeDeclaration(handlers, type,baseNameSpace, false, false) };
-
-                    codeCompileUnits.Add(CreateCodeUnit(string.Format("{0}.{1}.{2}", baseNameSpace,Constants.ClassesNamespace,nameSpace.Key), classTypes));
-                    var interfaceTypes = new[] { AddTypeDeclaration(handlers, type,baseNameSpace, true, true), AddTypeDeclaration(handlers, type,baseNameSpace, false, true) };
-                    codeCompileUnits.Add(CreateCodeUnit(string.Format("{0}.{1}.{2}", baseNameSpace, Constants.InterfacesNamespace, nameSpace.Key), interfaceTypes));
+                    items.Add(new EnumItem(baseNameSpace, type));
+                }
+                else if (type.IsInterface)
+                {
+                    items.Add(new InterfaceItem(type, baseNameSpace));
+                }
+                else
+                {
+                    if (!type.IsSealed || !type.IsAbstract)
+                    {
+                        var instanceInterface = new InstanceInterfaceAdapterItem(type, baseNameSpace);
+                        items.Add(instanceInterface);
+                        var instanceClass = new InstanceAdapterItem(type, baseNameSpace);
+                        items.Add(instanceClass);
+                        _typeMap.Add(type,instanceInterface.CodeTypeReference,instanceClass.CodeTypeReference);
+                    }
+                    items.Add(new StaticAdapterItem(type, baseNameSpace));
+                    items.Add(new StaticInterfaceAdapterItem(type, baseNameSpace));
                 }
             }
-            foreach (var handler in handlers)
+            foreach (var item in items)
             {
-                handler.AddMembers(_typeMap);
+                yield return new CodeCompileUnit
+                {
+                    Namespaces = {new CodeNamespace(item.NameSpace)
+                {
+                    Types = {item.Generate(_typeMap)}
+                }
+                    }
+                };
             }
-            return codeCompileUnits;
         }
 
-        private CodeTypeDeclaration AddTypeDeclaration(List<ITypeDeclarationHandler> handlers, Type type, string baseNamespace, bool isStatic, bool isInterface)
-        {
-            var handler = _typeDeclarationHandler.Create(type, baseNamespace, isInterface, isStatic);
-            handlers.Add(handler);
-            _typeMap.Add(type, handler.Declaration, isInterface && !isStatic);
-            return handler.Declaration;
-        }
-
-        private CodeCompileUnit CreateCodeUnit(string namespaceName,
-            IEnumerable<CodeTypeDeclaration> codeTypeDeclarations)
-        {
-            var nameSpace = new CodeNamespace(namespaceName);
-            foreach (var codeTypeDeclaration in codeTypeDeclarations)
-            {
-                nameSpace.Types.Add(codeTypeDeclaration);
-            }
-            var codeCompileUnit = new CodeCompileUnit();
-            codeCompileUnit.Namespaces.Add(nameSpace);
-            return codeCompileUnit;
-        }
 
     }
 }

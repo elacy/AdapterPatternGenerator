@@ -8,54 +8,71 @@ using System.Threading.Tasks;
 
 namespace AdapterPatternGenerator.CodeGenerator
 {
-    public class TypeMap:ITypeMap
+    public class TypeMap : ITypeMap
     {
-        readonly Dictionary<Type, CodeTypeDeclaration> _defaultTypes = new Dictionary<Type, CodeTypeDeclaration>();
-        readonly Dictionary<Type, List<CodeTypeDeclaration>> _allTypes = new Dictionary<Type, List<CodeTypeDeclaration>>();
-        readonly Dictionary<CodeTypeDeclaration, CodeTypeReference> _references = new Dictionary<CodeTypeDeclaration, CodeTypeReference>(); 
-        public bool Add(Type type, CodeTypeDeclaration codeTypeDeclaration, bool defaultTypeDeclaration, string baseNameSpace)
+
+        private readonly Dictionary<Type, CodeTypeReference> _interfaces = new Dictionary<Type, CodeTypeReference>();
+        private readonly Dictionary<Type, CodeTypeReference> _classes = new Dictionary<Type, CodeTypeReference>();
+
+        public TypeMap()
         {
-            if (defaultTypeDeclaration)
-            {
-                _defaultTypes.Add(type,codeTypeDeclaration);
-            }
-            if (_allTypes.ContainsKey(type))
-            {
-                _allTypes[type].Add(codeTypeDeclaration);
-            }
-            else
-            {
-                _allTypes.Add(type, new List<CodeTypeDeclaration>{codeTypeDeclaration});
-            }
-            _references.Add(codeTypeDeclaration,new CodeTypeReference());
-
-            return true;
-
         }
 
-        public CodeTypeDeclaration GetDefault(Type type)
+
+        public void Add(Type type, CodeTypeReference instanceInterface, CodeTypeReference instanceClass)
         {
-            if (_defaultTypes.ContainsKey(type))
-            {
-                return _defaultTypes[type];
-            }
-            return null;
+            _interfaces.Add(type, instanceInterface);
+            _classes.Add(type, instanceClass);
         }
 
-        public List<CodeTypeDeclaration> GetAll(Type type)
+
+
+        public CodeTypeReference GetBaseClass(bool isInterface, bool isStatic)
         {
-            if (_allTypes.ContainsKey(type))
-            {
-                return _allTypes[type];
-            }
-            return new List<CodeTypeDeclaration>();
+            throw new NotImplementedException();
         }
+
+        public CodeTypeReference BaseStaticInterface { get; set; }
+        public CodeTypeReference BaseStaticClass { get; set; }
+        public CodeTypeReference BaseInstanceClass { get; set; }
+        public CodeTypeReference BaseInstanceInterface { get; set; }
+
+        public CodeTypeReference GetInstanceInterface(Type type)
+        {
+            return GetReference(type, _interfaces);
+        }
+
+        public CodeTypeReference GetInstanceClass(Type type)
+        {
+            return GetReference(type, _classes);
+        }
+
+        private CodeTypeReference GetReference(Type type, IReadOnlyDictionary<Type, CodeTypeReference> map)
+        {
+            var genericTypeDef = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
+            var codeReference = new CodeTypeReference(type);
+            if (map.ContainsKey(genericTypeDef))
+            {
+
+                codeReference = map[genericTypeDef];
+            }
+            foreach (var param in type.GenericTypeArguments)
+            {
+                codeReference.TypeArguments.Add(GetReference(param, map));
+            }
+            return codeReference;
+        }
+
     }
 
     public interface ITypeMap
     {
-        bool Add(Type type, CodeTypeDeclaration codeTypeDeclaration, bool defaultTypeDeclaration, string baseNameSpace);
-        CodeTypeDeclaration GetDefault(Type type);
-        List<CodeTypeDeclaration> GetAll(Type type);
+        CodeTypeReference BaseStaticInterface { get; set; }
+        CodeTypeReference BaseStaticClass { get; set; }
+        CodeTypeReference BaseInstanceClass { get; set; }
+        CodeTypeReference BaseInstanceInterface { get; set; }
+        CodeTypeReference GetInstanceInterface(Type type);
+        CodeTypeReference GetInstanceClass(Type type);
+        void Add(Type type, CodeTypeReference instanceInterface, CodeTypeReference instanceClass);
     }
 }

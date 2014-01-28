@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="DifferentNameSpace\ExampleDifferentNameSpaceClass.cs" />
     <Compile Include="ExampleClass.cs" />
+    <Compile Include="ExampleEnum.cs" />
     <Compile Include="ExampleSealedClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

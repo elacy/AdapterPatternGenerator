@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using AdapterPatternGenerator.Example;
@@ -92,6 +93,11 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         {
             Assert.IsTrue(AllCodeTypeDeclarations.All(x => x.IsPartial));
         }
+        [Test]
+        public void AllClassesShouldHaveGeneratedCodeAttribute()
+        {
+            Assert.IsTrue(AllCodeTypeDeclarations.All(x => x.CustomAttributes.Cast<CodeAttributeDeclaration>().Any(y=>y.AttributeType.BaseType == Constants.CodeGenerationAttribute)));
+        }
 
         [Test]
         public void CorrectAdapterClassesAreCreated()
@@ -126,13 +132,11 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             var query = from type in _types
                 join typeDeclaration in AllCodeTypeDeclarations
                     on type.Name + adapter equals typeDeclaration.Name
-                let baseType = typeDeclaration.BaseTypes[0]
-                let typeParam = baseType.TypeArguments[0]
-                select new {type, baseType.BaseType, TypeParam = typeParam.BaseType};
+                        select new { type, TypeDeclaration = typeDeclaration };
             foreach (var item in query)
             {
-                Assert.AreEqual(ClassesNameSpace + "." + Constants.BaseInstanceAdapterName + "`1", item.BaseType);   
-                Assert.AreEqual(item.type.FullName,item.TypeParam);   
+                Assert.AreEqual(ClassesNameSpace + "." + Constants.BaseInstanceAdapterName + "`1", item.TypeDeclaration.BaseTypes[0].BaseType);   
+                Assert.AreEqual(item.type.FullName,item.TypeDeclaration.BaseTypes[0].TypeArguments[0].BaseType);   
             }
         }
 

@@ -28,11 +28,9 @@ namespace AdapterPatternGenerator.Implementation.Common
 
         private static void RegisterInternalClasses(ContainerBuilder builder)
         {
-            builder.RegisterType<TypeDeclarationHandlerFactory>().As<ITypeDeclarationHandlerFactory>();
             builder.RegisterType<CodeWriter>().As<ICodeWriter>();
             builder.RegisterType<CodeCompileUnitCreator>().As<ICodeCompileUnitCreator>();
             builder.RegisterType<Generator>().As<IGenerator>();
-            builder.RegisterType<BaseAdapterCreator>().As<IBaseAdapterCreator>();
             builder.RegisterType<TypeMap>().As<ITypeMap>();
         }
 
