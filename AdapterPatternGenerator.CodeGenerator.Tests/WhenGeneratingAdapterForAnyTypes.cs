@@ -27,7 +27,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             var type = AllCodeTypeDeclarations.First(x => x.Name == "BaseInstanceAdapter");
             var typeParam = type.TypeParameters[0];
             var constructor = type.Members.OfType<CodeConstructor>().Single();
-            var constructorParam = constructor.Parameters.OfType<CodeParameterDeclarationExpression>().Single();
+            var constructorParam = constructor.Parameters.AsEnumerable().Single();
             Assert.AreEqual(typeParam.Name, constructorParam.Type.BaseType);
         }
 
@@ -45,7 +45,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         {
             var type = AllCodeTypeDeclarations.First(x => x.Name == "BaseInstanceAdapter");
             var constructor = type.Members.OfType<CodeConstructor>().Single();
-            var constructorParam = constructor.Parameters.OfType<CodeParameterDeclarationExpression>().Single();
+            var constructorParam = constructor.Parameters.AsEnumerable().Single();
             var statement = constructor.Statements[0] as CodeAssignStatement;
             Assert.IsNotNull(statement);
             var left = statement.Left as CodeFieldReferenceExpression;

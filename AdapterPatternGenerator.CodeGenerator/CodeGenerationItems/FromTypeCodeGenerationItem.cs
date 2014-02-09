@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
@@ -40,6 +41,17 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
             }
             return codeTypeDeclaration;
         }
+
+        private readonly static string[] MembersNotIncluded = new[] {"GetType"};
+        protected void AddMembers(CodeTypeDeclaration codeTypeDeclaration, BindingFlags bindingFlags, ITypeMap typeMap)
+        {
+            AddProperties(codeTypeDeclaration, OriginalType.GetProperties(bindingFlags), typeMap);
+            var methodInfos = OriginalType.GetMethods(bindingFlags)
+                .Where(mi => !(mi.IsSpecialName && (mi.Name.StartsWith("set_") || mi.Name.StartsWith("get_"))));
+            AddMethods(codeTypeDeclaration, methodInfos, typeMap);
+            AddFields(codeTypeDeclaration, OriginalType.GetFields(bindingFlags), typeMap);
+        }
+
         private void AddProperty(CodeTypeDeclaration codeTypeDeclaration, PropertyInfo propertyInfo,ITypeMap typeMap)
         {
             var property = new CodeMemberProperty
@@ -49,10 +61,10 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
                 HasSet = propertyInfo.CanWrite,
                 HasGet = propertyInfo.CanRead,
             };
-            codeTypeDeclaration.Members.Add(property);
+            AddMember(codeTypeDeclaration, property);
         }
 
-        protected void AddProperties(CodeTypeDeclaration codeTypeDeclaration, IEnumerable<PropertyInfo> propertyInfos,
+        private void AddProperties(CodeTypeDeclaration codeTypeDeclaration, IEnumerable<PropertyInfo> propertyInfos,
             ITypeMap typeMap)
         {
             foreach (var propertyInfo in propertyInfos)
@@ -60,7 +72,7 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
                 AddProperty(codeTypeDeclaration,propertyInfo,typeMap);
             }
         }
-        private void AddMethod(CodeTypeDeclaration codeTypeDeclaration, MethodInfo methodInfo, ITypeMap typeMap)
+        private static void AddMethod(CodeTypeDeclaration codeTypeDeclaration, MethodInfo methodInfo, ITypeMap typeMap)
         {
             var method = new CodeMemberMethod
             {
@@ -76,17 +88,25 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
                 };
                 method.Parameters.Add(codeParam);
             }
-            codeTypeDeclaration.Members.Add(method);
+            AddMember(codeTypeDeclaration, method);
         }
-        protected void AddMethods(CodeTypeDeclaration codeTypeDeclaration, IEnumerable<MethodInfo> methodInfos,
+        private static void AddMethods(CodeTypeDeclaration codeTypeDeclaration, IEnumerable<MethodInfo> methodInfos,
             ITypeMap typeMap)
         {
+
             foreach (var methodInfo in methodInfos)
             {
                 AddMethod(codeTypeDeclaration, methodInfo, typeMap);
             }
         }
-        private void AddField(CodeTypeDeclaration codeTypeDeclaration, FieldInfo fieldInfo, ITypeMap typeMap)
+
+        private static void AddMember(CodeTypeDeclaration codeTypeDeclaration, CodeTypeMember member)
+        {
+            if (MembersNotIncluded.Contains(member.Name))
+                return;
+            codeTypeDeclaration.Members.Add(member);
+        }
+        private static void AddField(CodeTypeDeclaration codeTypeDeclaration, FieldInfo fieldInfo, ITypeMap typeMap)
         {
             var property = new CodeMemberProperty
             {
@@ -95,9 +115,9 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
                 HasSet = !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral,
                 HasGet = true,
             };
-            codeTypeDeclaration.Members.Add(property);
+            AddMember(codeTypeDeclaration, property);
         }
-        protected void AddFields(CodeTypeDeclaration codeTypeDeclaration, IEnumerable<FieldInfo> fieldInfos,
+        private static void AddFields(CodeTypeDeclaration codeTypeDeclaration, IEnumerable<FieldInfo> fieldInfos,
             ITypeMap typeMap)
         {
             foreach (var fieldInfo in fieldInfos)

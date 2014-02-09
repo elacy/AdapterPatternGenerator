@@ -15,13 +15,10 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
         {
         }
 
-        const BindingFlags BindingFlags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public;
         public override CodeTypeDeclaration Generate(ITypeMap typeMap)
         {
             var codeTypeDeclaration = base.Generate(typeMap);
-            AddMethods(codeTypeDeclaration, OriginalType.GetMethods(BindingFlags), typeMap);
-            AddProperties(codeTypeDeclaration, OriginalType.GetProperties(BindingFlags), typeMap);
-            AddFields(codeTypeDeclaration, OriginalType.GetFields(BindingFlags), typeMap);
+            AddMembers(codeTypeDeclaration, BindingFlags.Instance | BindingFlags.Public, typeMap);
             var baseClass = typeMap.BaseInstanceClass.Clone();
             baseClass.TypeArguments.Add(new CodeTypeReference(OriginalType));
             codeTypeDeclaration.BaseTypes.Add(baseClass);

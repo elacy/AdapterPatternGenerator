@@ -14,14 +14,11 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
             : base(originalType, GetNamespace(originalType, baseNameSpace, false), GetName(originalType))
         {
         }
-
-        const BindingFlags BindingFlags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public;
+         
         public override CodeTypeDeclaration Generate(ITypeMap typeMap)
         {
             var codeTypeDeclaration = base.Generate(typeMap);
-            AddMethods(codeTypeDeclaration, OriginalType.GetMethods(BindingFlags), typeMap);
-            AddProperties(codeTypeDeclaration, OriginalType.GetProperties(BindingFlags), typeMap);
-            AddFields(codeTypeDeclaration, OriginalType.GetFields(BindingFlags), typeMap);
+            AddMembers(codeTypeDeclaration, BindingFlags.Static | BindingFlags.Public, typeMap);
             return codeTypeDeclaration;
         }
     }

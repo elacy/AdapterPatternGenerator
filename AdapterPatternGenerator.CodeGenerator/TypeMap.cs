@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,8 +12,8 @@ namespace AdapterPatternGenerator.CodeGenerator
     public class TypeMap : ITypeMap
     {
 
-        private readonly Dictionary<Type, CodeTypeReference> _interfaces = new Dictionary<Type, CodeTypeReference>();
-        private readonly Dictionary<Type, CodeTypeReference> _classes = new Dictionary<Type, CodeTypeReference>();
+        private readonly Dictionary<string, CodeTypeReference> _interfaces = new Dictionary<string, CodeTypeReference>();
+        private readonly Dictionary<string, CodeTypeReference> _classes = new Dictionary<string, CodeTypeReference>();
 
         public TypeMap()
         {
@@ -21,8 +22,9 @@ namespace AdapterPatternGenerator.CodeGenerator
 
         public void Add(Type type, CodeTypeReference instanceInterface, CodeTypeReference instanceClass)
         {
-            _interfaces.Add(type, instanceInterface);
-            _classes.Add(type, instanceClass);
+            var reference = new CodeTypeReference(type);
+            _interfaces.Add(reference.BaseType, instanceInterface);
+            _classes.Add(reference.BaseType, instanceClass);
         }
 
 
@@ -44,23 +46,23 @@ namespace AdapterPatternGenerator.CodeGenerator
 
         public CodeTypeReference GetInstanceClass(Type type)
         {
-            return GetReference(type, _classes);
+            return GetReference(type,_classes);
         }
 
-        private CodeTypeReference GetReference(Type type, IReadOnlyDictionary<Type, CodeTypeReference> map)
-        {
-            var genericTypeDef = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
-            var codeReference = new CodeTypeReference(type);
-            if (map.ContainsKey(genericTypeDef))
-            {
 
-                codeReference = map[genericTypeDef];
-            }
-            foreach (var param in type.GenericTypeArguments)
-            {
-                codeReference.TypeArguments.Add(GetReference(param, map));
-            }
+        private static CodeTypeReference GetReference(Type type, IReadOnlyDictionary<string, CodeTypeReference> map)
+        {
+            var codeReference = new CodeTypeReference(type);
+            RecurseReplace(codeReference, map);
             return codeReference;
+        }
+
+        private static void RecurseReplace(CodeTypeReference codeReference, IReadOnlyDictionary<string, CodeTypeReference> map)
+        {
+            if (map.ContainsKey(codeReference.BaseType))
+            {
+                codeReference.BaseType = map[codeReference.BaseType].BaseType;
+            }
         }
 
     }

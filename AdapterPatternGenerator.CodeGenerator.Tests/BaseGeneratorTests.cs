@@ -48,11 +48,11 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
 
         protected IEnumerable<CodeNamespace> AllCodeNamespaces
         {
-            get { return AllCodeCompileUnits.SelectMany(x => x.Namespaces.OfType<CodeNamespace>()); }
+            get { return AllCodeCompileUnits.SelectMany(x => x.Namespaces.AsEnumerable()); }
         }
         protected IEnumerable<CodeTypeDeclaration> AllCodeTypeDeclarations
         {
-            get { return AllCodeNamespaces.SelectMany(x => x.Types.OfType<CodeTypeDeclaration>()); }
+            get { return AllCodeNamespaces.SelectMany(x => x.Types.AsEnumerable()); }
         }
 
         private readonly Dictionary<IStreamWriterAdapter, string> _streamWriters = new Dictionary<IStreamWriterAdapter, string>();

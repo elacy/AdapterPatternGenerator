@@ -37,5 +37,55 @@ namespace AdapterPatternGenerator.CodeGenerator
             foreach (var key in fromDictionary.Keys)
                 toDictionary[key] = fromDictionary[key];
         }
+
+        public static IEnumerable<CodeTypeReference> AsEnumerable(this CodeTypeReferenceCollection collection)
+        {
+            return collection.Cast<CodeTypeReference>();
+        }
+        public static IEnumerable<CodeTypeMember> AsEnumerable(this CodeTypeMemberCollection collection)
+        {
+            return collection.Cast<CodeTypeMember>();
+        }
+
+        public static IEnumerable<CodeParameterDeclarationExpression> AsEnumerable(this CodeParameterDeclarationExpressionCollection collection)
+        {
+            return collection.Cast<CodeParameterDeclarationExpression>();
+        }
+        public static IEnumerable<CodeAttributeDeclaration> AsEnumerable(this CodeAttributeDeclarationCollection collection)
+        {
+            return collection.Cast<CodeAttributeDeclaration>();
+        }
+        public static IEnumerable<CodeTypeDeclaration> AsEnumerable(this CodeTypeDeclarationCollection collection)
+        {
+            return collection.Cast<CodeTypeDeclaration>();
+        }
+        public static IEnumerable<CodeNamespace> AsEnumerable(this CodeNamespaceCollection collection)
+        {
+            return collection.Cast<CodeNamespace>();
+        }
+        public static IEnumerable<CodeCommentStatement> AsEnumerable(this CodeCommentStatementCollection collection)
+        {
+            return collection.Cast<CodeCommentStatement>();
+        }
+        public static IEnumerable<CodeDirective> AsEnumerable(this CodeDirectiveCollection collection)
+        {
+            return collection.Cast<CodeDirective>();
+        }
+        public static IEnumerable<CodeAttributeArgument> AsEnumerable(this CodeAttributeArgumentCollection collection)
+        {
+            return collection.Cast<CodeAttributeArgument>();
+        }
+        public static IEnumerable<CodeTypeParameter> AsEnumerable(this CodeTypeParameterCollection collection)
+        {
+            return collection.Cast<CodeTypeParameter>();
+        }
+        public static IEnumerable<CodeStatement> AsEnumerable(this CodeStatementCollection collection)
+        {
+            return collection.Cast<CodeStatement>();
+        }
+        public static IEnumerable<CodeExpression> AsEnumerable(this CodeExpressionCollection collection)
+        {
+            return collection.Cast<CodeExpression>();
+        }
     }
 }

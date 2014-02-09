@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace AdapterPatternGenerator.CodeGenerator.Tests
 {
-    public class WhenGeneratingAdapterForExampleClass:BaseGeneratorTests
+    public class WhenGeneratingAdapterForExampleClass : BaseGeneratorTests
     {
         private const string DirectoryName = "DirectoryName";
         private const string BaseNameSpace = "BaseNameSpace";
@@ -18,79 +18,138 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         public WhenGeneratingAdapterForExampleClass()
         {
             var generator = Ioc.Resolve<IGenerator>();
-            generator.GenerateCode(new List<Type> { typeof(ExampleClass)}, DirectoryName, BaseNameSpace);
+            generator.GenerateCode(new List<Type> { typeof(ExampleClass) }, DirectoryName, BaseNameSpace);
         }
 
-
-
-        //public Dictionary<string, int> TestDictionary = new Dictionary<string, int>();
-
-        //public List<List<int>> NestedType { get; set; }
-
-        //public ExampleSealedClass ExampleSealedClass { get; set; }
-        private readonly ExpectedProperty[] _expectedInstanceProperties = new[]
+        private static readonly CodeTypeMember[] _expectedInstanceMembers =
             {
-                new ExpectedProperty("ExampleProperty",typeof(string), true, true),
-                new ExpectedProperty("ExampleReadOnlyProperty",typeof(string), true, false),
-                new ExpectedProperty("ExampleWriteOnlyProperty",typeof(string), false, true),
-                new ExpectedProperty("Field",typeof(int), true, true),
-                new ExpectedProperty("ReadonlyField",typeof(int), true, false),
-                new ExpectedProperty("AnotherExampleClass",BaseNameSpace + "." + Constants.InterfacesNamespace + ".AdapterPatternGenerator.Example.IExampleClassAdapter", true, true),
-                //new ExpectedProperty("List",typeof(List<int>), true, true),
-                //new ExpectedProperty("TestDictionary",typeof(Dictionary<string,int>), true, true),
-                //new ExpectedProperty("NestedType",typeof(List<List<int>>), true, true),
+                CreateProperty("ExampleProperty",typeof(string), true, true),
+                CreateProperty("ExampleReadOnlyProperty",typeof(string), true, false),
+                CreateProperty("ExampleWriteOnlyProperty",typeof(string), false, true),
+                CreateProperty("Field",typeof(int), true, true),
+                CreateProperty("ReadonlyField",typeof(int), true, false),
+                CreateProperty("AnotherExampleClass",BaseNameSpace + "." + Constants.InterfacesNamespace + ".AdapterPatternGenerator.Example.IExampleClassAdapter", true, true),
+                CreateProperty("List",typeof(List<int>), true, true),
+                CreateProperty("TestDictionary",typeof(Dictionary<string,int>), true, true),
+                CreateProperty("NestedType",typeof(List<List<int>>), true, true),
+                CreateMethod("ToString", typeof(string)),
+                CreateMethod("GetHashCode", typeof(int)),
+                CreateMethod("Equals", typeof(bool),new CodeParameterDeclarationExpression(typeof(object),"obj")),
             };
-
-        private void AssertAreEquivalent(ExpectedProperty[] expected,
-            List<CodeMemberProperty> codeMemberProperties)
-        {
-            CollectionAssert.AreEquivalent(expected.Select(x=>x.Name),codeMemberProperties.Select(x=>x.Name));
-            var query = from expectedProp in expected
-                join actualProp in codeMemberProperties
-                    on expectedProp.Name equals actualProp.Name
-                select new {expectedProp, actualProp};
-            foreach (var item in query)
+        private static readonly CodeTypeMember[] _expectedStaticMembers =
             {
-                Assert.AreEqual(item.expectedProp.Type,item.actualProp.Type.BaseType);
-                Assert.AreEqual(item.expectedProp.CanRead, item.actualProp.HasGet);
-                Assert.AreEqual(item.expectedProp.CanWrite, item.actualProp.HasSet,item.actualProp.Name);
+                CreateProperty("StaticProperty",typeof(string), true, true),
+                CreateProperty("AnotherStaticProperty",typeof(int), true, true),
+                CreateProperty("StaticField",typeof(int), true, true),
+                CreateProperty("ConstTest",typeof(string), true, false),
+            };
+        private static CodeTypeMember CreateMethod(string name, Type returnType, params CodeParameterDeclarationExpression[] parameters)
+        {
+            return CreateMethod(name, new CodeTypeReference(returnType),parameters);
+        }
+        private static CodeTypeMember CreateMethod(string name, CodeTypeReference returnType, params CodeParameterDeclarationExpression[] parameters)
+        {
+            var cmm = new CodeMemberMethod()
+            {
+                Name = name,
+                ReturnType = returnType
+            };
+            foreach (var item in parameters)
+            {
+                cmm.Parameters.Add(item);
             }
+            return cmm;
         }
 
-        private List<CodeMemberProperty> GetProperties(string className)
+        private static CodeTypeDeclaration CreateDeclaration(string name)
         {
-            var adapter = AllCodeTypeDeclarations.First(x => x.Name == className);
-            return adapter.Members.OfType<CodeMemberProperty>().ToList();
-        }
-
-        [Test]
-        public void InstanceInterfaceHasCorrectProperties()
-        {
-            AssertAreEquivalent(_expectedInstanceProperties, GetProperties("IExampleClassAdapter"));
-        }
-
-        [Test]
-        public void InstanceClassHasCorrectProperties()
-        {
-            AssertAreEquivalent(_expectedInstanceProperties, GetProperties("ExampleClassAdapter"));
-        }
-        private readonly ExpectedProperty[] _expectedStaticProperties = new[]
+            return new CodeTypeDeclaration(name)
             {
-                new ExpectedProperty("StaticProperty",typeof(string), true, true),
-                new ExpectedProperty("AnotherStaticProperty",typeof(int), true, true),
-                new ExpectedProperty("StaticField",typeof(int), true, true),
-                new ExpectedProperty("ConstTest",typeof(string), true, false),
+                CustomAttributes = new CodeAttributeDeclarationCollection { new CodeAttributeDeclaration(Constants.CodeGenerationAttribute)},
+                IsPartial = true
             };
-        [Test]
-        public void StaticClassHasCorrectProperties()
+        }
+        private static CodeTypeDeclaration ExpectedIExampleClassAdapter()
         {
-            AssertAreEquivalent(_expectedStaticProperties, GetProperties("ExampleClassStaticAdapter"));
+            var obj = CreateDeclaration("IExampleClassAdapter");
+            obj.IsInterface = true;
+            obj.Members.AddRange(_expectedInstanceMembers);
+            return obj;
+        }
+        private static CodeTypeDeclaration ExpectedExampleClassAdapter()
+        {
+            var obj = CreateDeclaration("ExampleClassAdapter");
+            obj.IsClass = true;
+
+            var baseTypeReference =
+                new CodeTypeReference(BaseNameSpace + "." + Constants.ClassesNamespace + "." +
+                                      Constants.BaseInstanceAdapterName);
+            baseTypeReference.TypeArguments.Add(typeof (ExampleClass));
+            obj.BaseTypes.Add(baseTypeReference);
+
+            obj.Members.AddRange(_expectedInstanceMembers);
+            return obj;
+        }
+        private static CodeTypeDeclaration ExpectedIExampleClassStaticAdapter()
+        {
+            var obj = CreateDeclaration("IExampleClassStaticAdapter");
+            obj.IsInterface = true;
+            obj.Members.AddRange(_expectedStaticMembers);
+            return obj;
+        }
+        private static CodeTypeDeclaration ExpectedExampleClassStaticAdapter()
+        {
+            var obj = CreateDeclaration("ExampleClassStaticAdapter");
+            obj.IsClass = true;
+            obj.Members.AddRange(_expectedStaticMembers);
+            return obj;
+        }
+
+        private static CodeMemberProperty CreateProperty(string name, Type type, bool hasGet, bool hasSet)
+        {
+            return CreateProperty(name, new CodeTypeReference(type), hasGet, hasSet);
+        }
+        private static CodeMemberProperty CreateProperty(string name, string type, bool hasGet, bool hasSet)
+        {
+            return CreateProperty(name, new CodeTypeReference(type), hasGet, hasSet);
+        }
+        private static CodeMemberProperty CreateProperty(string name, CodeTypeReference type, bool hasGet, bool hasSet)
+        {
+            return new CodeMemberProperty
+            {
+                Name = name,
+                Type = type,
+                HasGet = hasGet,
+                HasSet = hasSet
+            };
+        }
+
+
+        private void Verify(CodeTypeMember expected )
+        {
+            var actual = AllCodeTypeDeclarations.First(x => x.Name == expected.Name);
+            CodeDomAssert.AreEqual(expected,actual);
         }
 
         [Test]
-        public void StaticInterfaceHasCorrectProperties()
+        public void VerifyIExampleClassAdapterProperties()
         {
-            AssertAreEquivalent(_expectedStaticProperties, GetProperties("IExampleClassStaticAdapter"));
+            Verify(ExpectedIExampleClassAdapter());
+        }
+        [Test]
+        public void VerifyExampleClassAdapterProperties()
+        {
+            Verify(ExpectedExampleClassAdapter());
+        }
+        [Test]
+        public void VerifyIExampleClassStaticAdapterProperties()
+        {
+            Verify(ExpectedIExampleClassStaticAdapter());
+        }
+        [Test]
+        public void VerifyExampleClassStaticAdapterProperties()
+        {
+            Verify(ExpectedExampleClassStaticAdapter());
         }
 
     }

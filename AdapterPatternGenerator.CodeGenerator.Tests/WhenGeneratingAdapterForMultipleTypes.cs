@@ -96,7 +96,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         [Test]
         public void AllClassesShouldHaveGeneratedCodeAttribute()
         {
-            Assert.IsTrue(AllCodeTypeDeclarations.All(x => x.CustomAttributes.Cast<CodeAttributeDeclaration>().Any(y=>y.AttributeType.BaseType == Constants.CodeGenerationAttribute)));
+            Assert.IsTrue(AllCodeTypeDeclarations.All(x => x.CustomAttributes.AsEnumerable().Any(y => y.AttributeType.BaseType == Constants.CodeGenerationAttribute)));
         }
 
         [Test]
@@ -120,7 +120,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                 
             };
            
-            var actual =AllCodeNamespaces.SelectMany( ns => ns.Types.Cast<CodeTypeDeclaration>().Select(ctd => ns.Name + "." + ctd.Name)).ToArray();
+            var actual =AllCodeNamespaces.SelectMany( ns => ns.Types.AsEnumerable().Select(ctd => ns.Name + "." + ctd.Name)).ToArray();
             
             CollectionAssert.AreEquivalent(expected,actual);
         }
