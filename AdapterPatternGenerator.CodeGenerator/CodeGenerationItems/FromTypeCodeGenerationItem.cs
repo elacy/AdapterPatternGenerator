@@ -15,17 +15,30 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
             OriginalType = originalType;
         }
 
+
+        private IEnumerable<CodeTypeReference> GetBaseTypes(Type type, ITypeMap typeMap)
+        {
+            if (type.BaseType == typeof (Enum))
+            {
+                yield break;
+            }
+            if (type.BaseType != typeof (object))
+            {
+                yield return typeMap.GetInstanceInterface(OriginalType.BaseType);
+            }
+            foreach (var item in type.GetInterfaces())
+            {
+                yield return typeMap.GetInstanceInterface(item);
+            }
+        }
+
         public override CodeTypeDeclaration Generate(ITypeMap typeMap)
         {
             var codeTypeDeclaration = base.Generate(typeMap);
             codeTypeDeclaration.IsPartial = true;
-            if (OriginalType.BaseType != null && OriginalType.BaseType != typeof(object))
+            foreach (var item in GetBaseTypes(OriginalType, typeMap))
             {
-                codeTypeDeclaration.BaseTypes.Add(typeMap.GetInstanceInterface(OriginalType.BaseType));
-            }
-            foreach (var iface in OriginalType.GetInterfaces())
-            {
-                codeTypeDeclaration.BaseTypes.Add(typeMap.GetInstanceInterface(iface));
+                codeTypeDeclaration.BaseTypes.Add(item);
             }
 
             for(int i = 0; i < OriginalType.GenericTypeArguments.Length;i++)

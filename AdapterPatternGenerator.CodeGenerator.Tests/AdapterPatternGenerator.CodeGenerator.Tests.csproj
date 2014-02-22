@@ -54,6 +54,7 @@
     <Compile Include="BaseGeneratorTests.cs" />
     <Compile Include="CodeDomExtensions.cs" />
     <Compile Include="WhenGeneratingAdapterForAnyTypes.cs" />
+    <Compile Include="WhenGeneratingCopyForEnum.cs" />
     <Compile Include="WhenGeneratingAdapterForExampleClass.cs" />
     <Compile Include="WhenGeneratingAdapterForMultipleTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

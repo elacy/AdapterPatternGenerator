@@ -13,27 +13,20 @@ namespace AdapterPatternGenerator.CodeGenerator
     {
 
         private readonly Dictionary<string, CodeTypeReference> _interfaces = new Dictionary<string, CodeTypeReference>();
+        private readonly Dictionary<string, CodeTypeReference> _staticInterfaces = new Dictionary<string, CodeTypeReference>();
         private readonly Dictionary<string, CodeTypeReference> _classes = new Dictionary<string, CodeTypeReference>();
-
-        public TypeMap()
-        {
-        }
-
-
+        
         public void Add(Type type, CodeTypeReference instanceInterface, CodeTypeReference instanceClass)
         {
             var reference = new CodeTypeReference(type);
             _interfaces.Add(reference.BaseType, instanceInterface);
             _classes.Add(reference.BaseType, instanceClass);
         }
-
-
-
-        public CodeTypeReference GetBaseClass(bool isInterface, bool isStatic)
+        public void Add(Type type, CodeTypeReference staticInterface)
         {
-            throw new NotImplementedException();
+            var reference = new CodeTypeReference(type);
+            _staticInterfaces.Add(reference.BaseType, staticInterface);
         }
-
         public CodeTypeReference BaseStaticInterface { get; set; }
         public CodeTypeReference BaseStaticClass { get; set; }
         public CodeTypeReference BaseInstanceClass { get; set; }
@@ -47,6 +40,10 @@ namespace AdapterPatternGenerator.CodeGenerator
         public CodeTypeReference GetInstanceClass(Type type)
         {
             return GetReference(type,_classes);
+        }
+        public CodeTypeReference GetStaticInterface(Type type)
+        {
+            return GetReference(type, _staticInterfaces);
         }
 
 
@@ -74,7 +71,9 @@ namespace AdapterPatternGenerator.CodeGenerator
         CodeTypeReference BaseInstanceClass { get; set; }
         CodeTypeReference BaseInstanceInterface { get; set; }
         CodeTypeReference GetInstanceInterface(Type type);
+        CodeTypeReference GetStaticInterface(Type type);
         CodeTypeReference GetInstanceClass(Type type);
+        void Add(Type type, CodeTypeReference staticInterface);
         void Add(Type type, CodeTypeReference instanceInterface, CodeTypeReference instanceClass);
     }
 }

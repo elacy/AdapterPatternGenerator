@@ -46,7 +46,9 @@ namespace AdapterPatternGenerator.CodeGenerator
                         _typeMap.Add(type,instanceInterface.CodeTypeReference,instanceClass.CodeTypeReference);
                     }
                     items.Add(new StaticAdapterItem(type, baseNameSpace));
-                    items.Add(new StaticInterfaceAdapterItem(type, baseNameSpace));
+                    var staticInterface = new StaticInterfaceAdapterItem(type, baseNameSpace);
+                    _typeMap.Add(type, staticInterface.CodeTypeReference);
+                    items.Add(staticInterface);
                 }
             }
             foreach (var item in items)

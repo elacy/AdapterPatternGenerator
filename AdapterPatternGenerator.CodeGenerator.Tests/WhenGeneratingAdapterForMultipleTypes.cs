@@ -17,12 +17,12 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
 {
     public class WhenGeneratingAdapterForMultipleTypes : BaseGeneratorTests
     {
-        private const string DirectoryName = "DirectoryName";
         private const string BaseNameSpace = "BaseNameSpace";
+        private const string DirectoryName = "DirectoryName";
 
         private const string ClassesNameSpace = BaseNameSpace + "." + Constants.ClassesNamespace;
         private const string InterfacesNameSpace = BaseNameSpace + "." + Constants.InterfacesNamespace;
-        
+
         private const string TestTypesNameSpace = @"AdapterPatternGenerator.Example";
         private const string DifferentNameSpace = TestTypesNameSpace + ".DifferentNameSpace";
 
@@ -33,20 +33,20 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         private const string DifferentNsClassesNamespace = ClassesNameSpace + "." + DifferentNameSpace;
 
         private const string TestTypesDirectory = @"AdapterPatternGenerator\Example";
-        private const string DifferentNameSpaceDirectory =TestTypesDirectory + @"\DifferentNameSpace";
+        private const string DifferentNameSpaceDirectory = TestTypesDirectory + @"\DifferentNameSpace";
 
         private static readonly string InterfacesDirectory = string.Format(@"{0}\{1}\{2}\{3}", DirectoryName,
-                BaseNameSpace, Constants.InterfacesNamespace,TestTypesDirectory);
+                BaseNameSpace, Constants.InterfacesNamespace, TestTypesDirectory);
 
         private static readonly string ClassesDirectory = string.Format(@"{0}\{1}\{2}\{3}", DirectoryName,
-                BaseNameSpace, Constants.ClassesNamespace,TestTypesDirectory);
+                BaseNameSpace, Constants.ClassesNamespace, TestTypesDirectory);
 
-        
+
         private static readonly string DifferentNamespaceInterfacesDirectory = string.Format(@"{0}\{1}\{2}\{3}", DirectoryName,
-                BaseNameSpace, Constants.InterfacesNamespace,DifferentNameSpaceDirectory);
+                BaseNameSpace, Constants.InterfacesNamespace, DifferentNameSpaceDirectory);
 
         private static readonly string DifferentNameSpaceClassesDirectory = string.Format(@"{0}\{1}\{2}\{3}", DirectoryName,
-                BaseNameSpace, Constants.ClassesNamespace,DifferentNameSpaceDirectory);
+                BaseNameSpace, Constants.ClassesNamespace, DifferentNameSpaceDirectory);
 
         public WhenGeneratingAdapterForMultipleTypes()
         {
@@ -54,7 +54,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             generator.GenerateCode(_types, DirectoryName, BaseNameSpace);
         }
         private readonly List<Type> _types = new List<Type> { typeof(ExampleClass), typeof(ExampleSealedClass), typeof(ExampleDifferentNameSpaceClass) };
-        
+
 
         [Test]
         public void ItShouldCreateADirectoryForExampleClass()
@@ -98,11 +98,10 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         {
             Assert.IsTrue(AllCodeTypeDeclarations.All(x => x.CustomAttributes.AsEnumerable().Any(y => y.AttributeType.BaseType == Constants.CodeGenerationAttribute)));
         }
-
         [Test]
         public void CorrectAdapterClassesAreCreated()
         {
-            var expected = new []
+            var expected = new[]
             {
                 ClassesNameSpace + "." + Constants.BaseInstanceAdapterName,
                 TestTypesClassesNamespace + ".ExampleClassAdapter",
@@ -119,10 +118,10 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                 DifferentNsClassesNamespace + ".ExampleDifferentNameSpaceClassStaticAdapter",
                 
             };
-           
-            var actual =AllCodeNamespaces.SelectMany( ns => ns.Types.AsEnumerable().Select(ctd => ns.Name + "." + ctd.Name)).ToArray();
-            
-            CollectionAssert.AreEquivalent(expected,actual);
+
+            var actual = AllCodeNamespaces.SelectMany(ns => ns.Types.AsEnumerable().Select(ctd => ns.Name + "." + ctd.Name)).ToArray();
+
+            CollectionAssert.AreEquivalent(expected, actual);
         }
 
         [Test]
@@ -130,13 +129,13 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         {
             const string adapter = "Adapter";
             var query = from type in _types
-                join typeDeclaration in AllCodeTypeDeclarations
-                    on type.Name + adapter equals typeDeclaration.Name
+                        join typeDeclaration in AllCodeTypeDeclarations
+                            on type.Name + adapter equals typeDeclaration.Name
                         select new { type, TypeDeclaration = typeDeclaration };
             foreach (var item in query)
             {
-                Assert.AreEqual(ClassesNameSpace + "." + Constants.BaseInstanceAdapterName + "`1", item.TypeDeclaration.BaseTypes[0].BaseType);   
-                Assert.AreEqual(item.type.FullName,item.TypeDeclaration.BaseTypes[0].TypeArguments[0].BaseType);   
+                Assert.AreEqual(ClassesNameSpace + "." + Constants.BaseInstanceAdapterName + "`1", item.TypeDeclaration.BaseTypes[0].BaseType);
+                Assert.AreEqual(item.type.FullName, item.TypeDeclaration.BaseTypes[0].TypeArguments[0].BaseType);
             }
         }
 

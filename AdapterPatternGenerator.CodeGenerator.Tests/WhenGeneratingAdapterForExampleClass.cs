@@ -14,21 +14,21 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
     {
         private const string DirectoryName = "DirectoryName";
         private const string BaseNameSpace = "BaseNameSpace";
-
+        private const string ExampleNameSpace = "AdapterPatternGenerator.Example";
         public WhenGeneratingAdapterForExampleClass()
         {
             var generator = Ioc.Resolve<IGenerator>();
             generator.GenerateCode(new List<Type> { typeof(ExampleClass) }, DirectoryName, BaseNameSpace);
         }
 
-        private static readonly CodeTypeMember[] _expectedInstanceMembers =
+        private static readonly CodeTypeMember[] ExpectedInstanceMembers =
             {
                 CreateProperty("ExampleProperty",typeof(string), true, true),
                 CreateProperty("ExampleReadOnlyProperty",typeof(string), true, false),
                 CreateProperty("ExampleWriteOnlyProperty",typeof(string), false, true),
                 CreateProperty("Field",typeof(int), true, true),
                 CreateProperty("ReadonlyField",typeof(int), true, false),
-                CreateProperty("AnotherExampleClass",BaseNameSpace + "." + Constants.InterfacesNamespace + ".AdapterPatternGenerator.Example.IExampleClassAdapter", true, true),
+                CreateProperty("AnotherExampleClass",BaseNameSpace + "." + Constants.InterfacesNamespace + "." + ExampleNameSpace + ".IExampleClassAdapter", true, true),
                 CreateProperty("List",typeof(List<int>), true, true),
                 CreateProperty("TestDictionary",typeof(Dictionary<string,int>), true, true),
                 CreateProperty("NestedType",typeof(List<List<int>>), true, true),
@@ -36,7 +36,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                 CreateMethod("GetHashCode", typeof(int)),
                 CreateMethod("Equals", typeof(bool),new CodeParameterDeclarationExpression(typeof(object),"obj")),
             };
-        private static readonly CodeTypeMember[] _expectedStaticMembers =
+        private static readonly CodeTypeMember[] ExpectedStaticMembers =
             {
                 CreateProperty("StaticProperty",typeof(string), true, true),
                 CreateProperty("AnotherStaticProperty",typeof(int), true, true),
@@ -69,11 +69,16 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                 IsPartial = true
             };
         }
+
+        private static string GetInterfaceName(string name)
+        {
+            return BaseNameSpace + "." + Constants.InterfacesNamespace + "." + ExampleNameSpace + ".I" + name;
+        }
         private static CodeTypeDeclaration ExpectedIExampleClassAdapter()
         {
             var obj = CreateDeclaration("IExampleClassAdapter");
             obj.IsInterface = true;
-            obj.Members.AddRange(_expectedInstanceMembers);
+            obj.Members.AddRange(ExpectedInstanceMembers);
             return obj;
         }
         private static CodeTypeDeclaration ExpectedExampleClassAdapter()
@@ -86,22 +91,24 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                                       Constants.BaseInstanceAdapterName);
             baseTypeReference.TypeArguments.Add(typeof (ExampleClass));
             obj.BaseTypes.Add(baseTypeReference);
+            obj.BaseTypes.Add(GetInterfaceName(obj.Name));
 
-            obj.Members.AddRange(_expectedInstanceMembers);
+            obj.Members.AddRange(ExpectedInstanceMembers);
             return obj;
         }
         private static CodeTypeDeclaration ExpectedIExampleClassStaticAdapter()
         {
             var obj = CreateDeclaration("IExampleClassStaticAdapter");
             obj.IsInterface = true;
-            obj.Members.AddRange(_expectedStaticMembers);
+            obj.Members.AddRange(ExpectedStaticMembers);
             return obj;
         }
         private static CodeTypeDeclaration ExpectedExampleClassStaticAdapter()
         {
             var obj = CreateDeclaration("ExampleClassStaticAdapter");
             obj.IsClass = true;
-            obj.Members.AddRange(_expectedStaticMembers);
+            obj.Members.AddRange(ExpectedStaticMembers);
+            obj.BaseTypes.Add(GetInterfaceName(obj.Name));
             return obj;
         }
 
@@ -125,11 +132,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         }
 
 
-        private void Verify(CodeTypeMember expected )
-        {
-            var actual = AllCodeTypeDeclarations.First(x => x.Name == expected.Name);
-            CodeDomAssert.AreEqual(expected,actual);
-        }
+        
 
         [Test]
         public void VerifyIExampleClassAdapterProperties()

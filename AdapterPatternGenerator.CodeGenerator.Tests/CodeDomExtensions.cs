@@ -89,6 +89,8 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
 
         public static void AreEqual(CodeExpression expected, CodeExpression actual)
         {
+            if (expected == null && actual == null)
+                return;
             AreEqual(expected.UserData,actual.UserData);
             Assert.AreEqual(expected.GetType(),actual.GetType());
             PerformActionIfTypeMatch<CodeParameterDeclarationExpression>(expected, actual, AreEqualSpec);

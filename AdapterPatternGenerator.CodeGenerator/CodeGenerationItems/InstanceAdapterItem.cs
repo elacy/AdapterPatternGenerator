@@ -22,6 +22,7 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
             var baseClass = typeMap.BaseInstanceClass.Clone();
             baseClass.TypeArguments.Add(new CodeTypeReference(OriginalType));
             codeTypeDeclaration.BaseTypes.Add(baseClass);
+            codeTypeDeclaration.BaseTypes.Add(typeMap.GetInstanceInterface(OriginalType));
             return codeTypeDeclaration;
         }
     }

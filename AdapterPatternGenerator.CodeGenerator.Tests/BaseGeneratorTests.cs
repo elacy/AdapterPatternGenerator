@@ -74,6 +74,11 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             public CodeCompileUnit CodeCompileUnit { get; set; }
 
         }
+        protected void Verify(CodeTypeMember expected)
+        {
+            var actual = AllCodeTypeDeclarations.First(x => x.Name == expected.Name);
+            CodeDomAssert.AreEqual(expected, actual);
+        }
         
     }
 }

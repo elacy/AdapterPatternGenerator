@@ -20,10 +20,8 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
 
             for (int i = 0; i < names.Length; i++)
             {
-                codeTypeDeclaration.Members.Add(new CodeMemberField(Name, names[i])
-                {
-                    InitExpression = new CodePrimitiveExpression(values.GetValue(i))
-                });
+                var field = new CodeMemberField(Name, names[i]);
+                codeTypeDeclaration.Members.Add(field);
             }
             return codeTypeDeclaration;
         }

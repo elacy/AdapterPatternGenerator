@@ -6,7 +6,7 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
 {
     public class StaticInterfaceAdapterItem : AdapterItem
     {
-        private static string GetName(Type originalType)
+        internal static string GetName(Type originalType)
         {
             return string.Format("I{0}StaticAdapter", originalType.Name);
         }
