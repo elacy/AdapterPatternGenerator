@@ -37,6 +37,16 @@ namespace AdapterPatternGenerator.Example
         public int Field = 4;
         public List<int> List { get; set; }
 
+        public void RefMethod(ref string par)
+        {
+            
+        }
+
+        public void OutMethod(out string parout)
+        {
+            parout = string.Empty;
+        }
+
        
     }
 }

@@ -23,34 +23,57 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
 
         private static IEnumerable<CodeTypeMember> ExpectedInstanceMembers(bool isInterface)
         {
-            yield return CreateProperty("ExampleProperty", typeof (string), true, true,!isInterface);
-            yield return CreateProperty("ExampleReadOnlyProperty", typeof(string), true, false, !isInterface);
-            yield return CreateProperty("ExampleWriteOnlyProperty", typeof(string), false, true, !isInterface);
-            yield return CreateProperty("Field", typeof(int), true, true, !isInterface);
-            yield return CreateProperty("ReadonlyField", typeof(int), true, false, !isInterface);
-            yield return CreateProperty("AnotherExampleClass", BaseNameSpace + "." + Constants.InterfacesNamespace + "." + ExampleNameSpace + ".IExampleClassAdapter", true, true, !isInterface);
-            yield return CreateProperty("List", typeof(List<int>), true, true, !isInterface);
-            yield return CreateProperty("TestDictionary", typeof(Dictionary<string, int>), true, true, !isInterface);
-            yield return CreateProperty("NestedType", typeof(List<List<int>>), true, true, !isInterface);
+            yield return CreateProperty("ExampleProperty", typeof(string), true, true, !isInterface, false);
+            yield return CreateProperty("ExampleReadOnlyProperty", typeof(string), true, false, !isInterface, false);
+            yield return CreateProperty("ExampleWriteOnlyProperty", typeof(string), false, true, !isInterface, false);
+            yield return CreateProperty("Field", typeof(int), true, true, !isInterface, true);
+            yield return CreateProperty("ReadonlyField", typeof(int), true, false, !isInterface, true);
+            yield return CreateProperty("AnotherExampleClass", BaseNameSpace + "." + Constants.InterfacesNamespace + "." + ExampleNameSpace + ".IExampleClassAdapter", true, true, !isInterface, false);
+            yield return CreateProperty("List", typeof(List<int>), true, true, !isInterface, false);
+            yield return CreateProperty("TestDictionary", typeof(Dictionary<string, int>), true, true, !isInterface, true);
+            yield return CreateProperty("NestedType", typeof(List<List<int>>), true, true, !isInterface,false);
             yield return CreateMethod("ToString", typeof(string), !isInterface);
             yield return CreateMethod("GetHashCode", typeof(int), !isInterface);
-            yield return CreateMethod("Equals", typeof(bool), !isInterface, new CodeParameterDeclarationExpression(typeof(object), "obj"));
+            yield return CreateMethod("Equals", typeof(bool), !isInterface, CreateParam(typeof(object), "obj"));
+            yield return CreateMethod("RefMethod", !isInterface, CreateParam(new CodeTypeReference("System.String&"), "par", FieldDirection.Ref));
+            yield return CreateMethod("OutMethod", !isInterface, CreateParam(new CodeTypeReference("System.String&"), "parout", FieldDirection.Out));
+        }
+        private static CodeParameterDeclarationExpression CreateParam(Type type, string name, FieldDirection direction = FieldDirection.In)
+        {
+            return CreateParam(new CodeTypeReference(type), name, direction);
+        }
+        private static CodeParameterDeclarationExpression CreateParam(CodeTypeReference type, string name, FieldDirection direction = FieldDirection.In)
+        {
+            return new CodeParameterDeclarationExpression()
+            {
+                Type = type,
+                Name = name,
+                Direction = direction
+            };
         }
 
         private static IEnumerable<CodeTypeMember> ExpectedStaticMembers(bool isInterface)
         {
-            yield return CreateProperty("StaticProperty", typeof(string), true, true, !isInterface);
-            yield return CreateProperty("AnotherStaticProperty", typeof(int), true, true, !isInterface);
-            yield return CreateProperty("StaticField", typeof(int), true, true, !isInterface);
-            yield return CreateProperty("ConstTest", typeof(string), true, false, !isInterface);
+            yield return CreateProperty("StaticProperty", typeof(string), true, true, !isInterface,false);
+            yield return CreateProperty("AnotherStaticProperty", typeof(int), true, true, !isInterface, false);
+            yield return CreateProperty("StaticField", typeof(int), true, true, !isInterface, true);
+            yield return CreateProperty("ConstTest", typeof(string), true, false, !isInterface, true);
         }
-        private static CodeTypeMember CreateMethod(string name, Type returnType,bool includeWireUp, params CodeParameterDeclarationExpression[] parameters)
+
+        private static CodeTypeMember CreateMethod(string name, Type returnType, bool includeWireUp, params CodeParameterDeclarationExpression[] parameters)
         {
-            return CreateMethod(name, new CodeTypeReference(returnType),includeWireUp,parameters);
+            return CreateMethod(name, new CodeTypeReference(returnType), includeWireUp, parameters);
+        }
+        private static CodeTypeMember CreateMethod(string name,bool includeWireUp, params CodeParameterDeclarationExpression[] parameters)
+        {
+            return CreateMethod(name, new CodeTypeReference(typeof(void)), includeWireUp, parameters);
         }
         private static CodeTypeMember CreateMethod(string name, CodeTypeReference returnType,bool includeWireUp, params CodeParameterDeclarationExpression[] parameters)
         {
-            var passParams = parameters.Select(x => new CodeVariableReferenceExpression(x.Name)).Cast<CodeExpression>().ToArray();
+
+            var passParams = parameters
+                .Select(x => new CodeDirectionExpression(x.Direction,new CodeArgumentReferenceExpression(x.Name)))
+                .Cast<CodeExpression>().ToArray();
             var cmm = new CodeMemberMethod()
             {
                 Name = name,
@@ -63,7 +86,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                 var methodInvokeExpression = new CodeMethodInvokeExpression(
                         new CodeFieldReferenceExpression(new CodeThisReferenceExpression(),
                             Constants.InternalAdapterFieldName), name, passParams) ;
-                if (returnType == null)
+                if (returnType.BaseType == typeof(void).FullName)
                 {
                     cmm.Statements.Add(methodInvokeExpression);
                 }
@@ -118,35 +141,49 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         {
             var obj = CreateDeclaration("IExampleClassStaticAdapter");
             obj.IsInterface = true;
-            obj.Members.AddRange(ExpectedStaticMembers(false).ToArray());
+            obj.Members.AddRange(ExpectedStaticMembers(true).ToArray());
             return obj;
         }
         private static CodeTypeDeclaration ExpectedExampleClassStaticAdapter()
         {
             var obj = CreateDeclaration("ExampleClassStaticAdapter");
             obj.IsClass = true;
-            obj.Members.AddRange(ExpectedStaticMembers(true).ToArray());
+            obj.Members.AddRange(ExpectedStaticMembers(false).ToArray());
             obj.BaseTypes.Add(GetInterfaceName(obj.Name));
             return obj;
         }
 
-        private static CodeMemberProperty CreateProperty(string name, Type type, bool hasGet, bool hasSet, bool wireUp)
+        private static CodeMemberProperty CreateProperty(string name, Type type, bool hasGet, bool hasSet, bool wireUp,bool isField)
         {
-            return CreateProperty(name, new CodeTypeReference(type), hasGet, hasSet,wireUp);
+            return CreateProperty(name, new CodeTypeReference(type), hasGet, hasSet,wireUp,isField);
         }
-        private static CodeMemberProperty CreateProperty(string name, string type, bool hasGet, bool hasSet, bool wireUp)
+        private static CodeMemberProperty CreateProperty(string name, string type, bool hasGet, bool hasSet, bool wireUp, bool isField)
         {
-            return CreateProperty(name, new CodeTypeReference(type), hasGet, hasSet, wireUp);
+            return CreateProperty(name, new CodeTypeReference(type), hasGet, hasSet, wireUp, isField);
         }
-        private static CodeMemberProperty CreateProperty(string name, CodeTypeReference type, bool hasGet, bool hasSet,bool wireUp)
+        private static CodeMemberProperty CreateProperty(string name, CodeTypeReference type, bool hasGet, bool hasSet,bool wireUp, bool isField)
         {
-            return new CodeMemberProperty
+            var property = new CodeMemberProperty
             {
                 Name = name,
                 Type = type,
                 HasGet = hasGet,
                 HasSet = hasSet
             };
+            if (wireUp)
+            {
+                var field = new CodeFieldReferenceExpression(new CodeThisReferenceExpression(),  Constants.InternalAdapterFieldName);
+                var propertyReference = isField?(CodeExpression)new CodeFieldReferenceExpression(field,name):new CodePropertyReferenceExpression(field, name);
+                if (property.HasGet)
+                {
+                    property.GetStatements.Add(new CodeMethodReturnStatement(propertyReference));
+                }
+                if (property.HasSet)
+                {
+                    property.SetStatements.Add(new CodeAssignStatement(propertyReference, new CodeVariableReferenceExpression("value")));
+                }
+            }
+            return property;
         }
 
 

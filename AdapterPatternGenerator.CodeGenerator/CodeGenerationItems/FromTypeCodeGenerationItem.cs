@@ -65,7 +65,7 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
             AddFields(codeTypeDeclaration, OriginalType.GetFields(bindingFlags), typeMap);
         }
 
-        private void AddProperty(CodeTypeDeclaration codeTypeDeclaration, PropertyInfo propertyInfo,ITypeMap typeMap)
+        private static void AddProperty(CodeTypeDeclaration codeTypeDeclaration, PropertyInfo propertyInfo,ITypeMap typeMap)
         {
             var property = new CodeMemberProperty
             {
@@ -74,10 +74,25 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
                 HasSet = propertyInfo.CanWrite,
                 HasGet = propertyInfo.CanRead,
             };
+
+            if (!codeTypeDeclaration.IsInterface)
+            {
+                var field = new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), Constants.InternalAdapterFieldName);
+                var propertyReference = new CodePropertyReferenceExpression(field, property.Name);
+
+                if (property.HasGet)
+                {
+                    property.GetStatements.Add(new CodeMethodReturnStatement(propertyReference));
+                }
+                if (property.HasSet)
+                {
+                    property.SetStatements.Add(new CodeAssignStatement(propertyReference, new CodeVariableReferenceExpression("value")));
+                }
+            }
             AddMember(codeTypeDeclaration, property);
         }
 
-        private void AddProperties(CodeTypeDeclaration codeTypeDeclaration, IEnumerable<PropertyInfo> propertyInfos,
+        private static void AddProperties(CodeTypeDeclaration codeTypeDeclaration, IEnumerable<PropertyInfo> propertyInfos,
             ITypeMap typeMap)
         {
             foreach (var propertyInfo in propertyInfos)
@@ -93,22 +108,34 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
                 Attributes = MemberAttributes.Public,
                 ReturnType = typeMap.GetInstanceInterface(methodInfo.ReturnType)
             };
+            var arguments = new List<CodeExpression>();
             foreach (var param in methodInfo.GetParameters())
             {
+                
                 var codeParam = new CodeParameterDeclarationExpression
                 {
                     Type = typeMap.GetInstanceInterface(param.ParameterType),
-                    Name = methodInfo.Name
+                    Name = param.Name
                 };
+                if(param.IsOut)
+                {
+                    codeParam.Direction = FieldDirection.Out;
+                }
+                else if (param.ParameterType.IsByRef)
+                {
+                    codeParam.Direction = FieldDirection.Ref;
+                }
+                arguments.Add(new CodeDirectionExpression(codeParam.Direction, new CodeArgumentReferenceExpression(codeParam.Name)));
+                
                 method.Parameters.Add(codeParam);
             }
-            var passParams = methodInfo.GetParameters().Select(x => new CodeVariableReferenceExpression(x.Name)).Cast<CodeExpression>().ToArray();
+            
             if (!codeTypeDeclaration.IsInterface)
             {
                 var methodInvokeExpression = new CodeMethodInvokeExpression(
                         new CodeFieldReferenceExpression(new CodeThisReferenceExpression(),
-                            Constants.InternalAdapterFieldName), method.Name, passParams);
-                if (method.ReturnType == null)
+                            Constants.InternalAdapterFieldName), method.Name, arguments.ToArray());
+                if (method.ReturnType.BaseType == new CodeTypeReference(typeof(void)).BaseType)
                 {
                     method.Statements.Add(methodInvokeExpression);
                 }
@@ -144,6 +171,21 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
                 HasSet = !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral,
                 HasGet = true,
             };
+            if (!codeTypeDeclaration.IsInterface)
+            {
+                var field = new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), Constants.InternalAdapterFieldName);
+                var propertyReference = new CodeFieldReferenceExpression(field, property.Name);
+
+                if (property.HasGet)
+                {
+                    property.GetStatements.Add(new CodeMethodReturnStatement(propertyReference));
+                }
+                if (property.HasSet)
+                {
+                    property.SetStatements.Add(new CodeAssignStatement(propertyReference, new CodeVariableReferenceExpression("value")));    
+                }
+                
+            }
             AddMember(codeTypeDeclaration, property);
         }
         private static void AddFields(CodeTypeDeclaration codeTypeDeclaration, IEnumerable<FieldInfo> fieldInfos,

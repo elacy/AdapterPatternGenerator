@@ -30,6 +30,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             {
                 items = expected.Join(actual, joinFunc, joinFunc, (x, y) => new { Expected = x, Actual = y });
             }
+            Assert.AreEqual(expected.Count(),items.Count());
             foreach (var item in items)
             {
                 action(item.Expected, item.Actual);
@@ -96,10 +97,46 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             PerformActionIfTypeMatch<CodeParameterDeclarationExpression>(expected, actual, AreEqualSpec);
             PerformActionIfTypeMatch<CodeFieldReferenceExpression>(expected, actual, AreEqualSpec);
             PerformActionIfTypeMatch<CodeVariableReferenceExpression>(expected, actual, AreEqualSpec);
+            PerformActionIfTypeMatch<CodeArgumentReferenceExpression>(expected, actual, AreEqualSpec);
+            PerformActionIfTypeMatch<CodePropertyReferenceExpression>(expected, actual, AreEqualSpec);
+            PerformActionIfTypeMatch<CodeMethodInvokeExpression>(expected, actual, AreEqualSpec);
+            PerformActionIfTypeMatch<CodeMethodReferenceExpression>(expected, actual, AreEqualSpec);
+            PerformActionIfTypeMatch<CodeDirectionExpression>(expected, actual, AreEqualSpec);
 
             //This reference have no extra values
             //PerformActionIfTypeMatch<CodeThisReferenceExpression>(first, second, AreEqualSpec);
         }
+
+        private static void AreEqualSpec(CodeArgumentReferenceExpression expected, CodeArgumentReferenceExpression actual)
+        {
+            Assert.AreEqual(expected.ParameterName,actual.ParameterName);
+        }
+
+        private static void AreEqualSpec(CodeDirectionExpression expected, CodeDirectionExpression actual)
+        {
+            Assert.AreEqual(expected.Direction,actual.Direction);
+            AreEqual(expected.Expression,actual.Expression);
+        }
+
+        private static void AreEqualSpec(CodeMethodReferenceExpression expected, CodeMethodReferenceExpression actual)
+        {
+            Assert.AreEqual(expected.MethodName, actual.MethodName);
+            AreEqual(expected.TargetObject, actual.TargetObject);
+            PerformAction(expected.TypeArguments.AsEnumerable(),actual.TypeArguments.AsEnumerable(),AreEqual);
+        }
+
+        private static void AreEqualSpec(CodeMethodInvokeExpression expected, CodeMethodInvokeExpression actual)
+        {
+            AreEqual(expected.Method,actual.Method);
+            PerformAction(expected.Parameters.AsEnumerable(),actual.Parameters.AsEnumerable(),AreEqual);
+        }
+
+        private static void AreEqualSpec(CodePropertyReferenceExpression expected, CodePropertyReferenceExpression actual)
+        {
+            Assert.AreEqual(expected.PropertyName, actual.PropertyName);
+            AreEqual(expected.TargetObject, actual.TargetObject);
+        }
+
         public static void AreEqualSpec(CodeFieldReferenceExpression expected, CodeFieldReferenceExpression actual)
         {
             Assert.AreEqual(expected.FieldName, actual.FieldName);
@@ -110,14 +147,10 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             Assert.AreEqual(expected.VariableName,actual.VariableName);
         }
         
-        public static void AreEqual()
-        {
-            
-        }
 
         private static void AreEqualSpec(CodeParameterDeclarationExpression expected, CodeParameterDeclarationExpression actual)
         {
-            Assert.AreEqual(expected.Direction,expected.Direction);
+            Assert.AreEqual(expected.Direction, actual.Direction);
             AreEqual(expected.Type,actual.Type);
             Assert.AreEqual(expected.Name,actual.Name);
         }
@@ -128,7 +161,13 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             PerformAction(expected.StartDirectives.AsEnumerable(), actual.StartDirectives.AsEnumerable(), AreEqual);
             AreEqual(expected.LinePragma,actual.LinePragma);
             Assert.AreEqual(expected.GetType(),actual.GetType());
-            PerformActionIfTypeMatch < CodeAssignStatement>(expected,actual,AreEqualSpec);
+            PerformActionIfTypeMatch<CodeAssignStatement>(expected, actual, AreEqualSpec);
+            PerformActionIfTypeMatch<CodeMethodReturnStatement>(expected, actual, AreEqualSpec);
+        }
+
+        private static void AreEqualSpec(CodeMethodReturnStatement expected, CodeMethodReturnStatement actual)
+        {
+            AreEqual(expected.Expression,actual.Expression);
         }
 
         private static void AreEqualSpec(CodeAssignStatement expected, CodeAssignStatement actual)
@@ -212,7 +251,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             AreEqual(expected.PrivateImplementationType, actual.PrivateImplementationType);
             PerformAction(expected.ImplementationTypes.AsEnumerable(), actual.ImplementationTypes.AsEnumerable(), AreEqual);
             AreEqual(expected.ReturnType,actual.ReturnType);
-            PerformAction(expected.Parameters.AsEnumerable(), actual.Parameters.AsEnumerable(), AreEqual,x=>x.Name);
+            PerformAction(expected.Parameters.AsEnumerable(), actual.Parameters.AsEnumerable(), AreEqual);
             PerformAction(expected.ReturnTypeCustomAttributes.AsEnumerable(),  actual.ReturnTypeCustomAttributes.AsEnumerable(), AreEqual);
             PerformAction(expected.TypeParameters.AsEnumerable(),actual.TypeParameters.AsEnumerable(),AreEqual);
             PerformAction(expected.Statements.AsEnumerable(), actual.Statements.AsEnumerable(), AreEqual);

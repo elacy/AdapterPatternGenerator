@@ -17,8 +17,8 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
         public override CodeTypeDeclaration Generate(ITypeMap typeMap)
         {
             var codeTypeDeclaration = base.Generate(typeMap);
-            AddMembers(codeTypeDeclaration, BindingFlags.Static | BindingFlags.Public, typeMap);    
             codeTypeDeclaration.IsInterface = true;
+            AddMembers(codeTypeDeclaration, BindingFlags.Static | BindingFlags.Public, typeMap);    
             return codeTypeDeclaration;
         }
     }
