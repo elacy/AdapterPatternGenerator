@@ -52,6 +52,7 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             var cmm = new CodeMemberMethod()
             {
                 Name = name,
+                Attributes = MemberAttributes.Public,
                 ReturnType = returnType
             };
             foreach (var item in parameters)

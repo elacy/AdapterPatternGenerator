@@ -90,6 +90,7 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
             var method = new CodeMemberMethod
             {
                 Name = methodInfo.Name,
+                Attributes = MemberAttributes.Public,
                 ReturnType = typeMap.GetInstanceInterface(methodInfo.ReturnType)
             };
             foreach (var param in methodInfo.GetParameters())
