@@ -39,7 +39,7 @@ namespace AdapterPatternGenerator.CodeGenerator
                 }
             }
         }
-        private string GetPath(string directoryName, CodeCompileUnit codeCompileUnit,bool includeFileName)
+        private static string GetPath(string directoryName, CodeCompileUnit codeCompileUnit,bool includeFileName)
         {
             var nameSpace = codeCompileUnit.Namespaces[0];
             var firstType = nameSpace.Types[0];
@@ -50,16 +50,6 @@ namespace AdapterPatternGenerator.CodeGenerator
             }
             filePathParts.Insert(0,directoryName);
             return Path.Combine(filePathParts.ToArray());
-        }
-        public void GenerateCSharpCode(CodeCompileUnit codeCompileUnit, string fileName)
-        {
-            var provider = CodeDomProvider.CreateProvider("CSharp");
-            var options = new CodeGeneratorOptions { BracingStyle = "C" };
-            using (var sourceWriter = new StreamWriter(fileName))
-            {
-                provider.GenerateCodeFromCompileUnit(
-                    codeCompileUnit, sourceWriter, options);
-            }
         }
     }
 }

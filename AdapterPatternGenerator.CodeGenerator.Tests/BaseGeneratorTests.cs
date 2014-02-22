@@ -5,6 +5,7 @@ using System.Linq;
 using AdapterPatternGenerator.AdapterInterfaces.System.CodeDom.Compiler;
 using AdapterPatternGenerator.AdapterInterfaces.System.IO;
 using FakeItEasy;
+using FubuCsProjFile;
 
 namespace AdapterPatternGenerator.CodeGenerator.Tests
 {
@@ -14,6 +15,10 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         {
             Ioc = new TestIoc();
             Results = new List<Result>();
+            Solutions = new List<Solution>();
+
+            A.CallTo(() => Ioc.SolutionWriter.WriteSolution(A<Solution>.Ignored))
+                .Invokes((Solution solution) => Solutions.Add(solution));
 
             A.CallTo(()=>Ioc.CodeDomProviderStaticAdapter.CreateProvider(A<string>.Ignored)).ReturnsLazily((string language)=>CreateCodeDomProviderAdapter(language));
 
@@ -40,6 +45,8 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             });
         }
         protected List<Result> Results { get; set; }
+
+        protected List<Solution> Solutions { get; set; } 
 
         protected IEnumerable<CodeCompileUnit> AllCodeCompileUnits
         {

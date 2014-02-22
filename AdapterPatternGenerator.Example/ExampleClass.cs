@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace AdapterPatternGenerator.Example
 {
+    /// <summary>
+    /// Sample Class Comment
+    /// </summary>
     public class ExampleClass
     {
         public string ExampleProperty { get; set; }
@@ -30,6 +33,9 @@ namespace AdapterPatternGenerator.Example
 
         public Dictionary<string,int> TestDictionary = new Dictionary<string, int>();
 
+        /// <summary>
+        /// Sample Property comment
+        /// </summary>
         public List<List<int>> NestedType { get; set; } 
 
         public ExampleClass AnotherExampleClass { get; set; }
@@ -37,6 +43,10 @@ namespace AdapterPatternGenerator.Example
         public int Field = 4;
         public List<int> List { get; set; }
 
+        /// <summary>
+        /// Sample Method Comment
+        /// </summary>
+        /// <param name="par">Sample Param Comment</param>
         public void RefMethod(ref string par)
         {
             

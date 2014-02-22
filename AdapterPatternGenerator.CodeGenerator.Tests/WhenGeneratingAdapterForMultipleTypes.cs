@@ -35,18 +35,18 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         private const string TestTypesDirectory = @"AdapterPatternGenerator\Example";
         private const string DifferentNameSpaceDirectory = TestTypesDirectory + @"\DifferentNameSpace";
 
-        private static readonly string InterfacesDirectory = string.Format(@"{0}\{1}\{2}\{3}", DirectoryName,
-                BaseNameSpace, Constants.InterfacesNamespace, TestTypesDirectory);
+        private static readonly string InterfacesDirectory = 
+            Path.Combine(DirectoryName, BaseNameSpace, Constants.InterfacesNamespace, TestTypesDirectory);
 
-        private static readonly string ClassesDirectory = string.Format(@"{0}\{1}\{2}\{3}", DirectoryName,
-                BaseNameSpace, Constants.ClassesNamespace, TestTypesDirectory);
+        private static readonly string ClassesDirectory = 
+            Path.Combine(DirectoryName, BaseNameSpace, Constants.ClassesNamespace, TestTypesDirectory);
 
 
-        private static readonly string DifferentNamespaceInterfacesDirectory = string.Format(@"{0}\{1}\{2}\{3}", DirectoryName,
-                BaseNameSpace, Constants.InterfacesNamespace, DifferentNameSpaceDirectory);
+        private static readonly string DifferentNamespaceInterfacesDirectory =
+            Path.Combine(DirectoryName, BaseNameSpace, Constants.InterfacesNamespace, DifferentNameSpaceDirectory);
 
-        private static readonly string DifferentNameSpaceClassesDirectory = string.Format(@"{0}\{1}\{2}\{3}", DirectoryName,
-                BaseNameSpace, Constants.ClassesNamespace, DifferentNameSpaceDirectory);
+        private static readonly string DifferentNameSpaceClassesDirectory = 
+            Path.Combine(DirectoryName, BaseNameSpace, Constants.ClassesNamespace, DifferentNameSpaceDirectory);
 
         public WhenGeneratingAdapterForMultipleTypes()
         {
@@ -138,6 +138,28 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
                 Assert.AreEqual(item.type.FullName, item.TypeDeclaration.BaseTypes[0].TypeArguments[0].BaseType);
             }
         }
+
+        [Test]
+        public void CreatesSingleSolution()
+        {
+            var solution = Solutions.Single();
+            var path = Path.Combine(DirectoryName, BaseNameSpace);
+            Assert.AreEqual(path, solution.ParentDirectory);
+            Assert.AreEqual(BaseNameSpace, solution.Name);
+        }
+        [Test]
+        public void AddedProjectForClasses()
+        {
+            var solution = Solutions.Single();
+            Assert.AreEqual(1, solution.Projects.Count(x => x.ProjectName == Constants.ClassesNamespace));
+        }
+        [Test]
+        public void AddedProjectForInterfaces()
+        {
+            var solution = Solutions.Single();
+            Assert.AreEqual(1, solution.Projects.Count(x => x.ProjectName == Constants.InterfacesNamespace));
+        }
+
 
     }
 }

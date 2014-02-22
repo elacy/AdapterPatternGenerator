@@ -39,6 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FubuCsProjFile\ISolutionAdapter.cs" />
+    <Compile Include="FubuCsProjFile\ISolutionProjectAdapter.cs" />
+    <Compile Include="FubuCsProjFile\ISolutionStaticAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\CodeDom\Compiler\ICodeDomProviderAdapter.cs" />
     <Compile Include="System\CodeDom\Compiler\ICodeDomProviderStaticAdapter.cs" />
