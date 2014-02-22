@@ -102,6 +102,21 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
                 };
                 method.Parameters.Add(codeParam);
             }
+            var passParams = methodInfo.GetParameters().Select(x => new CodeVariableReferenceExpression(x.Name)).Cast<CodeExpression>().ToArray();
+            if (!codeTypeDeclaration.IsInterface)
+            {
+                var methodInvokeExpression = new CodeMethodInvokeExpression(
+                        new CodeFieldReferenceExpression(new CodeThisReferenceExpression(),
+                            Constants.InternalAdapterFieldName), method.Name, passParams);
+                if (method.ReturnType == null)
+                {
+                    method.Statements.Add(methodInvokeExpression);
+                }
+                else
+                {
+                    method.Statements.Add(new CodeMethodReturnStatement(methodInvokeExpression));
+                }
+            }
             AddMember(codeTypeDeclaration, method);
         }
         private static void AddMethods(CodeTypeDeclaration codeTypeDeclaration, IEnumerable<MethodInfo> methodInfos,
