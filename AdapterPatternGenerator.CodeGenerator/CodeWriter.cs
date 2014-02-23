@@ -39,7 +39,7 @@ namespace AdapterPatternGenerator.CodeGenerator
                 }
             }
         }
-        private static string GetPath(string directoryName, CodeCompileUnit codeCompileUnit,bool includeFileName)
+        public string GetPath(string directoryName, CodeCompileUnit codeCompileUnit,bool includeFileName)
         {
             var nameSpace = codeCompileUnit.Namespaces[0];
             var firstType = nameSpace.Types[0];

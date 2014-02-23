@@ -11,6 +11,7 @@ using AdapterPatternGenerator.Example;
 using AdapterPatternGenerator.Example.DifferentNameSpace;
 using FakeItEasy;
 using FakeItEasy.ExtensionSyntax.Full;
+using FubuCsProjFile;
 using NUnit.Framework;
 
 namespace AdapterPatternGenerator.CodeGenerator.Tests
@@ -147,19 +148,83 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             Assert.AreEqual(path, solution.ParentDirectory);
             Assert.AreEqual(BaseNameSpace, solution.Name);
         }
+
+        private Solution GetSingleSolution()
+        {
+            if (Solutions.Count != 1)
+            {
+                Assert.Inconclusive();
+            }
+            return Solutions.Single();
+        }
+
+        private SolutionProject GetSingleProject(string name)
+        {
+            var solution = GetSingleSolution();
+            if (solution.Projects.Count(x => x.ProjectName == name) != 1)
+            {
+                Assert.Inconclusive();
+            }
+            return solution.Projects.Single(x => x.ProjectName == name);
+        }
+
+        private SolutionProject GetClassesProject()
+        {
+            return GetSingleProject(Constants.ClassesNamespace);
+        }
+        private SolutionProject GetInterfacesProject()
+        {
+            return GetSingleProject(Constants.InterfacesNamespace);
+        }
         [Test]
         public void AddedProjectForClasses()
         {
-            var solution = Solutions.Single();
+            var solution = GetSingleSolution();
             Assert.AreEqual(1, solution.Projects.Count(x => x.ProjectName == Constants.ClassesNamespace));
         }
         [Test]
         public void AddedProjectForInterfaces()
         {
-            var solution = Solutions.Single();
+            var solution = GetSingleSolution();
             Assert.AreEqual(1, solution.Projects.Count(x => x.ProjectName == Constants.InterfacesNamespace));
         }
 
+        [Test]
+        public void ClassesProjectHasRightFiles()
+        {
+            var project = GetClassesProject();
+            var codeFiles = project.Project.All<CodeFile>();
+            var actual = codeFiles.Select(x => x.Include);
 
+            var expected = Results.Where(IsClass).Select(x => GetPath(x.CodeCompileUnit,ClassesNameSpace));
+            CollectionAssert.AreEquivalent(expected,actual);
+        }
+
+        [Test]
+        public void InterfacesProjectHasRightFiles()
+        {
+            var project = GetInterfacesProject();
+            var codeFiles = project.Project.All<CodeFile>();
+            var actual = codeFiles.Select(x => x.Include);
+
+            var expected = Results.Where(IsInterface).Select(x => GetPath(x.CodeCompileUnit, InterfacesNameSpace));
+            CollectionAssert.AreEquivalent(expected, actual);
+        }
+        private static string GetPath(CodeCompileUnit codeCompileUnit, string baseNameSpace)
+        {
+            var nameSpace = codeCompileUnit.Namespaces[0];
+            var type = nameSpace.Types[0];
+            var fullName = nameSpace.Name + "." + type.Name;
+            fullName = fullName.Substring(baseNameSpace.Length + 1);
+            return Path.Combine(fullName.Split('.')) + ".cs";
+        }
+        private static bool IsInterface(Result result)
+        {
+            return result.CodeCompileUnit.Namespaces[0].Types[0].IsInterface;
+        }
+        private static bool IsClass(Result result)
+        {
+            return result.CodeCompileUnit.Namespaces[0].Types[0].IsClass;
+        }
     }
 }
