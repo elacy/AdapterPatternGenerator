@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AdapterPatternGenerator.CodeGenerator.CodeGenerationItems;
 using AdapterPatternGenerator.Example;
 using NUnit.Framework;
 
@@ -106,7 +107,17 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         {
             return new CodeTypeDeclaration(name)
             {
-                CustomAttributes = new CodeAttributeDeclarationCollection { new CodeAttributeDeclaration(Constants.CodeGenerationAttribute)},
+                CustomAttributes = new CodeAttributeDeclarationCollection
+                {
+                    new CodeAttributeDeclaration(Constants.CodeGenerationAttribute)
+                    {
+                        Arguments =
+                        {
+                            new CodeAttributeArgument(new CodePrimitiveExpression(Constants.ProductName)),
+                            new CodeAttributeArgument(new CodePrimitiveExpression(Constants.ProductVersion))
+                        }
+                    }
+                },
                 IsPartial = true
             };
         }

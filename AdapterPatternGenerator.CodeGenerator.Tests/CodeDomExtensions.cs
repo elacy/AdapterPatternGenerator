@@ -102,9 +102,15 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             PerformActionIfTypeMatch<CodeMethodInvokeExpression>(expected, actual, AreEqualSpec);
             PerformActionIfTypeMatch<CodeMethodReferenceExpression>(expected, actual, AreEqualSpec);
             PerformActionIfTypeMatch<CodeDirectionExpression>(expected, actual, AreEqualSpec);
+            PerformActionIfTypeMatch<CodePrimitiveExpression>(expected, actual, AreEqualSpec);
 
             //This reference have no extra values
             //PerformActionIfTypeMatch<CodeThisReferenceExpression>(first, second, AreEqualSpec);
+        }
+
+        private static void AreEqualSpec(CodePrimitiveExpression expected, CodePrimitiveExpression actual)
+        {
+           Assert.AreEqual(expected.Value,actual.Value);
         }
 
         private static void AreEqualSpec(CodeArgumentReferenceExpression expected, CodeArgumentReferenceExpression actual)

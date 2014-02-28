@@ -19,6 +19,13 @@ namespace AdapterPatternGenerator.CodeGenerator.CodeGenerationItems
                     new CodeAttributeDeclarationCollection
                     {
                         new CodeAttributeDeclaration(Constants.CodeGenerationAttribute)
+                        {
+                            Arguments =
+                            {
+                                new CodeAttributeArgument(new CodePrimitiveExpression(Constants.ProductName)),
+                                new CodeAttributeArgument(new CodePrimitiveExpression(Constants.ProductVersion))
+                            }
+                        }
                     }
             };
         }

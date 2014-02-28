@@ -15,5 +15,7 @@ namespace AdapterPatternGenerator.CodeGenerator
         public const string GeneratedLanguage = "CSharp";
         public const string GeneratedBracingStyle = "C";
         public const string CodeGenerationAttribute = "System.CodeDom.Compiler.GeneratedCodeAttribute";
+        public const string ProductName = "AdapterPatternGenerator";
+        public const string ProductVersion = "0.0.1";
     }
 }

@@ -26,7 +26,14 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
             {
                 IsEnum = true,
                 IsPartial = true,
-                CustomAttributes = { new CodeAttributeDeclaration(Constants.CodeGenerationAttribute)},
+                CustomAttributes = { new CodeAttributeDeclaration(Constants.CodeGenerationAttribute)
+                    {
+                        Arguments =
+                        {
+                            new CodeAttributeArgument(new CodePrimitiveExpression(Constants.ProductName)),
+                            new CodeAttributeArgument(new CodePrimitiveExpression(Constants.ProductVersion))
+                        }
+                    }},
                 Members = { 
                     new CodeMemberField("ExampleEnumCopy","Test"),
                     new CodeMemberField("ExampleEnumCopy","Ted")

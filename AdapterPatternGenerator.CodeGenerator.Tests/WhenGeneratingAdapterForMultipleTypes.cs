@@ -97,7 +97,24 @@ namespace AdapterPatternGenerator.CodeGenerator.Tests
         [Test]
         public void AllClassesShouldHaveGeneratedCodeAttribute()
         {
-            Assert.IsTrue(AllCodeTypeDeclarations.All(x => x.CustomAttributes.AsEnumerable().Any(y => y.AttributeType.BaseType == Constants.CodeGenerationAttribute)));
+            foreach (var codeTypeDeclaration in AllCodeTypeDeclarations)
+            {
+                var customAttribute =
+                    codeTypeDeclaration.CustomAttributes.AsEnumerable()
+                        .First(x => x.AttributeType.BaseType == Constants.CodeGenerationAttribute);
+                Assert.AreEqual(Constants.ProductName, GetValue(customAttribute.Arguments[0]));
+                Assert.AreEqual(Constants.ProductVersion, GetValue(customAttribute.Arguments[1]));
+            }
+        }
+
+        private string GetValue(CodeAttributeArgument argument)
+        {
+            var primitive = argument.Value as CodePrimitiveExpression;
+            if (primitive != null)
+            {
+                return primitive.Value as string;
+            }
+            return null;
         }
         [Test]
         public void CorrectAdapterClassesAreCreated()
